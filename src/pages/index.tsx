@@ -1,211 +1,222 @@
-import Link from 'next/link'
+import axios from 'axios'
+import router from 'next/router'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
 
-import Head from 'next/head'
+const API_ENDPOINT =
+  'https://bdo08aact3.execute-api.ap-southeast-2.amazonaws.com/Test'
 
-export default function Home() {
+interface IRegistrationInputs {
+  email: string
+  name: string
+  password: string
+  confirmPassword: string
+}
+
+function Register() {
+  const [errorMsg, setErrorMsg] = useState('')
+  const { register, handleSubmit } = useForm<IRegistrationInputs>()
+
+  async function onSubmit(data: IRegistrationInputs) {
+    const { email, name, password, confirmPassword } = data
+
+    if (password !== confirmPassword) {
+      setErrorMsg('Password mismatch')
+      return
+    }
+
+    try {
+      await axios.post(API_ENDPOINT, {
+        operation: 'create',
+        tableName: 'User',
+        payload: {
+          Item: {
+            Email: email,
+            Name: name,
+            Password: password,
+            admin: false,
+          },
+        },
+      })
+    } catch (e) {
+      console.error('Error registering', e)
+      setErrorMsg(e.message)
+    }
+  }
+
   return (
-    <div className="container">
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+    <div
+      className="modal fade"
+      id="exampleModal"
+      role="dialog"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true">
+      <div className="modal-dialog" role="document">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h5 className="modal-title" id="exampleModalLabel">
+              Registration Form
+            </h5>
+            <button
+              type="button"
+              className="close"
+              data-dismiss="modal"
+              aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="modal-body">
+              {errorMsg && (
+                <div className="alert alert-danger" role="alert">
+                  {errorMsg}
+                </div>
+              )}
 
-      <main>
-        <h1 className="title">
-          Read{' '}
-          <Link href="/posts/first-post">
-            <a>this page!</a>
-          </Link>
-        </h1>
+              <label>Email</label>
+              <input
+                {...register('email')}
+                type="email"
+                className="form-control mb-3"
+                placeholder="Email"
+                required
+              />
 
-        <p className="description">
-          Get started by editing <code>pages/index.js</code>
-        </p>
+              <label>Name</label>
+              <input
+                {...register('name')}
+                type="text"
+                className="form-control mb-3"
+                placeholder="Name"
+                required
+              />
 
-        <div className="grid">
-          <a href="https://nextjs.org/docs" className="card">
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className="card">
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className="card">
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className="card">
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+              <label>Password</label>
+              <input
+                {...register('password')}
+                type="password"
+                className="form-control mb-3"
+                placeholder="Password"
+                required
+              />
+              <label>Confirm Password</label>
+              <input
+                {...register('confirmPassword')}
+                type="password"
+                className="form-control mb-3"
+                placeholder="Confirm Password"
+                required
+              />
+            </div>
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                data-dismiss="modal">
+                Close
+              </button>
+              <button type="submit" className="btn btn-primary">
+                Register
+              </button>
+            </div>
+          </form>
         </div>
-      </main>
-
-      <footer>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer">
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className="logo" />
-        </a>
-      </footer>
-
-      <style jsx>{`
-        .container {
-          min-height: 100vh;
-          padding: 0 0.5rem;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
-
-        main {
-          padding: 5rem 0;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
-
-        footer {
-          width: 100%;
-          height: 100px;
-          border-top: 1px solid #eaeaea;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        footer img {
-          margin-left: 0.5rem;
-        }
-
-        footer a {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        a {
-          color: inherit;
-          text-decoration: none;
-        }
-
-        .title a {
-          color: #0070f3;
-          text-decoration: none;
-        }
-
-        .title a:hover,
-        .title a:focus,
-        .title a:active {
-          text-decoration: underline;
-        }
-
-        .title {
-          margin: 0;
-          line-height: 1.15;
-          font-size: 4rem;
-        }
-
-        .title,
-        .description {
-          text-align: center;
-        }
-
-        .description {
-          line-height: 1.5;
-          font-size: 1.5rem;
-        }
-
-        code {
-          background: #fafafa;
-          border-radius: 5px;
-          padding: 0.75rem;
-          font-size: 1.1rem;
-          font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
-            DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
-        }
-
-        .grid {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-wrap: wrap;
-
-          max-width: 800px;
-          margin-top: 3rem;
-        }
-
-        .card {
-          margin: 1rem;
-          flex-basis: 45%;
-          padding: 1.5rem;
-          text-align: left;
-          color: inherit;
-          text-decoration: none;
-          border: 1px solid #eaeaea;
-          border-radius: 10px;
-          transition: color 0.15s ease, border-color 0.15s ease;
-        }
-
-        .card:hover,
-        .card:focus,
-        .card:active {
-          color: #0070f3;
-          border-color: #0070f3;
-        }
-
-        .card h3 {
-          margin: 0 0 1rem 0;
-          font-size: 1.5rem;
-        }
-
-        .card p {
-          margin: 0;
-          font-size: 1.25rem;
-          line-height: 1.5;
-        }
-
-        .logo {
-          height: 1em;
-        }
-
-        @media (max-width: 600px) {
-          .grid {
-            width: 100%;
-            flex-direction: column;
-          }
-        }
-      `}</style>
-
-      <style jsx global>{`
-        html,
-        body {
-          padding: 0;
-          margin: 0;
-          font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
-            Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
-            sans-serif;
-        }
-
-        * {
-          box-sizing: border-box;
-        }
-      `}</style>
+      </div>
     </div>
+  )
+}
+
+interface ILoginInputs {
+  email: string
+  password: string
+}
+
+export default function Login() {
+  const [errorMsg, setErrorMsg] = useState('')
+
+  const { register, handleSubmit } = useForm<ILoginInputs>()
+
+  async function onSubmit(data: ILoginInputs) {
+    const { email, password } = data
+
+    try {
+      await axios.post(API_ENDPOINT, {
+        // TODO: change operation
+        operation: 'create',
+        tableName: 'User',
+        payload: {
+          Item: {
+            Email: email,
+            Password: password,
+            admin: false,
+          },
+        },
+      })
+
+      router.push({
+        pathname: 'dashboard',
+      })
+    } catch (e) {
+      console.error('Error logging in', e)
+      setErrorMsg(e.message)
+    }
+  }
+
+  return (
+    <>
+      <div className="sidenav">
+        <div className="login-main-text">
+          <h2>
+            Application
+            <br /> Login Page
+          </h2>
+          <p>Login or register from here to access.</p>
+        </div>
+      </div>
+      <div className="main">
+        <div className="col-md-6 col-sm-12">
+          <div className="login-form">
+            {errorMsg && (
+              <div className="alert alert-danger" role="alert">
+                {errorMsg}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="form-group">
+                <label>Email</label>
+                <input
+                  {...register('email')}
+                  type="email"
+                  className="form-control"
+                  placeholder="Email"
+                />
+              </div>
+              <div className="form-group">
+                <label>Password</label>
+                <input
+                  {...register('password')}
+                  type="password"
+                  className="form-control"
+                  placeholder="Password"
+                />
+              </div>
+              <button type="submit" className="btn btn-black mr-3">
+                Login
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                data-toggle="modal"
+                data-target="#exampleModal">
+                Register
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <Register />
+    </>
   )
 }
