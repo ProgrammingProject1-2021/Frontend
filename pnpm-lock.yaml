@@ -1,10 +1,12 @@
 dependencies:
+  '@ant-design/icons': 4.6.2_react-dom@17.0.1+react@17.0.1
   antd: 4.15.1_react-dom@17.0.1+react@17.0.1
   axios: 0.21.1
   bootstrap: 4.6.0
   next: 10.0.9_5347ba9dae72bc17e95cc7756ff465f1
   react: 17.0.1
   react-dom: 17.0.1_react@17.0.1
+  react-highlight-words: 0.17.0_react@17.0.1
   react-hook-form: 7.0.0_react@17.0.1
 devDependencies:
   '@types/node': 14.14.37
@@ -840,6 +842,10 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==
+  /highlight-words-core/1.2.2:
+    dev: false
+    resolution:
+      integrity: sha512-BXUKIkUuh6cmmxzi5OIbUJxrG8OAk2MqoL1DtO3Wo9D2faJg2ph5ntyuQeLqaHJmzER6H5tllCDA9ZnNe9BVGg==
   /hmac-drbg/1.0.1:
     dependencies:
       hash.js: 1.1.7
@@ -1016,6 +1022,10 @@ packages:
     dev: false
     resolution:
       integrity: sha512-xitP+WxNPcTTOgnTJcrhM0xvdPepipPSf3I8EIpGKeFLjt3PlJLIDG3u8EX53ZIubkb+5U2+3rELYpEhHhzdkg==
+  /memoize-one/4.0.3:
+    dev: false
+    resolution:
+      integrity: sha512-QmpUu4KqDmX0plH4u+tf0riMc1KHE1+lw95cMrLlXQAFOx/xnBtwhZ52XJxd9X2O6kwKBqX32kmhbhlobD0cuw==
   /merge-stream/2.0.0:
     dev: false
     resolution:
@@ -1920,6 +1930,17 @@ packages:
       react: 17.0.1
     resolution:
       integrity: sha512-6eV150oJZ9U2t9svnsspTMrWNyHc6chX0KzDeAOXftRa8bNeOKTTfCJ7KorIwenkHd2xqVTBTCZd79yk/lx/Ug==
+  /react-highlight-words/0.17.0_react@17.0.1:
+    dependencies:
+      highlight-words-core: 1.2.2
+      memoize-one: 4.0.3
+      prop-types: 15.7.2
+      react: 17.0.1
+    dev: false
+    peerDependencies:
+      react: ^0.14.0 || ^15.0.0 || ^16.0.0-0 || ^17.0.0-0
+    resolution:
+      integrity: sha512-uX1Qh5IGjnLuJT0Zok234QDwRC8h4hcVMnB99Cb7aquB1NlPPDiWKm0XpSZOTdSactvnClCk8LOmVlP+75dgHA==
   /react-hook-form/7.0.0_react@17.0.1:
     dependencies:
       react: 17.0.1
@@ -2344,6 +2365,7 @@ packages:
     resolution:
       integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
 specifiers:
+  '@ant-design/icons': ^4.6.2
   '@types/node': ^14.14.37
   '@types/react': ^17.0.3
   antd: ^4.15.1
@@ -2353,5 +2375,6 @@ specifiers:
   prettier: ^2.2.1
   react: 17.0.1
   react-dom: 17.0.1
+  react-highlight-words: ^0.17.0
   react-hook-form: ^7.0.0
   typescript: ^4.2.3

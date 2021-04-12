@@ -1,8 +1,10 @@
-import { Form, Input, notification, Row, Table } from 'antd'
+import { SearchOutlined } from '@ant-design/icons'
+import { Button, Form, Input, notification, Space, Table } from 'antd'
 import axios from 'axios'
-import React from 'react'
-import { API_ENDPOINT } from '../constant/api'
 import router from 'next/router'
+import React, { useRef, useState } from 'react'
+import Highlighter from 'react-highlight-words'
+import { API_ENDPOINT } from '../constant/api'
 
 type Vehicle = {
   id: string
@@ -11,27 +13,132 @@ type Vehicle = {
   customerName: string
 }
 
-const columns = [
-  {
-    title: 'Model',
-    dataIndex: 'carModel',
-  },
-  {
-    title: 'Registration',
-    dataIndex: 'registration',
-  },
-  {
-    title: 'Customer Name',
-    dataIndex: 'customerName',
-  },
-]
-
 type VehiclePageProps = {
   vehicles: Vehicle[]
 }
 
 export default function VehiclePage({ vehicles }: VehiclePageProps) {
+  const columns = [
+    {
+      title: 'Model',
+      dataIndex: 'carModel',
+      ...getColumnSearchProps('carModel'),
+    },
+    {
+      title: 'Registration',
+      dataIndex: 'registration',
+      ...getColumnSearchProps('registration'),
+    },
+    {
+      title: 'Customer Name',
+      dataIndex: 'customerName',
+      ...getColumnSearchProps('customerName'),
+    },
+  ]
+
+  const [searchState, setSearchState] = useState({
+    searchText: '',
+    searchedColumn: '',
+  })
+  const searchInputEl = useRef(null)
   const [form] = Form.useForm<Vehicle>()
+
+  console.log('searchstate', searchState)
+
+  function getColumnSearchProps(dataIndex) {
+    return {
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+      }) => (
+        <div style={{ padding: 8 }}>
+          <Input
+            ref={searchInputEl}
+            placeholder={`Search ${dataIndex}`}
+            value={selectedKeys[0]}
+            onChange={(e) =>
+              setSelectedKeys(e.target.value ? [e.target.value] : [])
+            }
+            onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            style={{ width: 188, marginBottom: 8, display: 'block' }}
+          />
+          <Space>
+            <Button
+              type="primary"
+              onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+              icon={<SearchOutlined />}
+              size="small"
+              style={{ width: 90 }}>
+              Search
+            </Button>
+            <Button
+              onClick={() => handleReset(clearFilters)}
+              size="small"
+              style={{ width: 90 }}>
+              Reset
+            </Button>
+            <Button
+              type="link"
+              size="small"
+              onClick={() => {
+                confirm({ closeDropdown: false })
+                setSearchState({
+                  searchText: selectedKeys[0],
+                  searchedColumn: dataIndex,
+                })
+              }}>
+              Filter
+            </Button>
+          </Space>
+        </div>
+      ),
+      filterIcon: (filtered: boolean) => (
+        <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
+      ),
+      onFilter: (value: string, record) => {
+        console.log('value', value, '\nrecord', record)
+        console.log('\ndataIndex', dataIndex)
+
+        return record[dataIndex]
+          ? record[dataIndex]
+              .toString()
+              .toLowerCase()
+              .includes(value.toLowerCase())
+          : ''
+      },
+      onFilterDropdownVisibleChange: (visible: boolean) => {
+        if (visible) {
+          setTimeout(() => searchInputEl.current.select(), 100)
+        }
+      },
+      render: (text: string) =>
+        searchState.searchedColumn === dataIndex ? (
+          <Highlighter
+            highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+            searchWords={[searchState.searchText]}
+            autoEscape
+            textToHighlight={text ? text.toString() : ''}
+          />
+        ) : (
+          text
+        ),
+    }
+  }
+
+  function handleSearch(selectedKeys, confirm, dataIndex) {
+    confirm()
+    setSearchState({
+      searchText: selectedKeys[0],
+      searchedColumn: dataIndex,
+    })
+  }
+
+  function handleReset(clearFilters) {
+    clearFilters()
+    setSearchState({ ...searchState, searchText: '' })
+  }
 
   async function handleSubmit() {
     await form.validateFields()
