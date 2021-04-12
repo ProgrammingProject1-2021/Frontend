@@ -43,8 +43,6 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
   const searchInputEl = useRef(null)
   const [form] = Form.useForm<Vehicle>()
 
-  console.log('searchstate', searchState)
-
   function getColumnSearchProps(dataIndex) {
     return {
       filterDropdown: ({
@@ -97,17 +95,13 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
       filterIcon: (filtered: boolean) => (
         <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
       ),
-      onFilter: (value: string, record) => {
-        console.log('value', value, '\nrecord', record)
-        console.log('\ndataIndex', dataIndex)
-
-        return record[dataIndex]
+      onFilter: (value: string, record) =>
+        record[dataIndex]
           ? record[dataIndex]
               .toString()
               .toLowerCase()
               .includes(value.toLowerCase())
-          : ''
-      },
+          : '',
       onFilterDropdownVisibleChange: (visible: boolean) => {
         if (visible) {
           setTimeout(() => searchInputEl.current.select(), 100)
