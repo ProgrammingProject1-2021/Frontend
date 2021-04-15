@@ -1,5 +1,5 @@
 import { SearchOutlined } from '@ant-design/icons'
-import { Button, Form, Input, notification, Space, Table } from 'antd'
+import { Button, Input, notification, Space, Table } from 'antd'
 import axios from 'axios'
 import router from 'next/router'
 import React, { useRef, useState } from 'react'
@@ -13,11 +13,11 @@ type Vehicle = {
   customerName: string
 }
 
-type VehiclePageProps = {
+type BookingPageProps = {
   vehicles: Vehicle[]
 }
 
-export default function VehiclePage({ vehicles }: VehiclePageProps) {
+export default function BookingPage({ vehicles }: BookingPageProps) {
   const columns = [
     {
       title: 'Model',
@@ -30,9 +30,22 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
       ...getColumnSearchProps('registration'),
     },
     {
-      title: 'Customer Name',
+      title: 'Location',
+      dataIndex: 'location',
+      ...getColumnSearchProps('location'),
+    },
+    {
+      title: 'Action',
       dataIndex: 'customerName',
-      ...getColumnSearchProps('customerName'),
+      render: (name: string, row: Vehicle) => {
+        // Render button only when customer name is empty (null or empty string)
+        if (!name)
+          return (
+            <button onClick={() => handleBooking(row.id)} className="btn btn-success btn-sm">
+              Booking
+            </button>
+          )
+      },
     },
   ]
 
@@ -41,24 +54,38 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
     searchedColumn: '',
   })
   const searchInputEl = useRef(null)
-  const [form] = Form.useForm<Vehicle>()
 
+  async function handleBooking(carId: string) {
+    try {
+      const { data: responseData } = await axios.put(ApiEndpoint.vehicle + carId, { customerName: 'North' })
+      console.log('Booking response', responseData)
+      notification.success({
+        message: 'Booking Successful',
+      })
+
+      // Wait 2 seconds before reloading the page
+      setTimeout(() => {
+        router.reload()
+      }, 2000)
+    } catch ({ message }) {
+      console.error('Error sending booking request', message)
+      notification.error({
+        message: 'Booking Unsuccessful',
+        description: message,
+      })
+    }
+  }
+
+  // Begin functions used for table searching
   function getColumnSearchProps(dataIndex) {
     return {
-      filterDropdown: ({
-        setSelectedKeys,
-        selectedKeys,
-        confirm,
-        clearFilters,
-      }) => (
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
         <div style={{ padding: 8 }}>
           <Input
             ref={searchInputEl}
             placeholder={`Search ${dataIndex}`}
             value={selectedKeys[0]}
-            onChange={(e) =>
-              setSelectedKeys(e.target.value ? [e.target.value] : [])
-            }
+            onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
             onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
             style={{ width: 188, marginBottom: 8, display: 'block' }}
           />
@@ -71,10 +98,7 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
               style={{ width: 90 }}>
               Search
             </Button>
-            <Button
-              onClick={() => handleReset(clearFilters)}
-              size="small"
-              style={{ width: 90 }}>
+            <Button onClick={() => handleReset(clearFilters)} size="small" style={{ width: 90 }}>
               Reset
             </Button>
             <Button
@@ -92,16 +116,9 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
           </Space>
         </div>
       ),
-      filterIcon: (filtered: boolean) => (
-        <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
-      ),
+      filterIcon: (filtered: boolean) => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
       onFilter: (value: string, record) =>
-        record[dataIndex]
-          ? record[dataIndex]
-              .toString()
-              .toLowerCase()
-              .includes(value.toLowerCase())
-          : '',
+        record[dataIndex] ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()) : '',
       onFilterDropdownVisibleChange: (visible: boolean) => {
         if (visible) {
           setTimeout(() => searchInputEl.current.select(), 100)
@@ -133,77 +150,11 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
     clearFilters()
     setSearchState({ ...searchState, searchText: '' })
   }
-
-  async function handleSubmit() {
-    await form.validateFields()
-
-    const { carModel, registration, customerName } = form.getFieldsValue()
-
-    try {
-      // Send data to backend
-      await axios.post(ApiEndpoint.vehicle, {
-        carModel,
-        registration,
-        customerName,
-      })
-      router.reload()
-    } catch ({ message }) {
-      console.error('Error sending vehicle info', message)
-      notification.error({
-        message: 'Adding new vehicle failed',
-        description: message,
-      })
-    }
-  }
+  // End functions used for table searching
 
   return (
     <div className="container pt-4 pb-3">
-      <Form form={form} onFinish={handleSubmit}>
-        <div className="form-group">
-          <div className="row">
-            <div className="col-lg-4">
-              <label htmlFor="carModel">Car Model</label>
-              <Form.Item name="carModel">
-                <Input
-                  id="carModel"
-                  placeholder="Car Model"
-                  className="form-control"
-                  required
-                />
-              </Form.Item>
-            </div>
-            <div className="col-lg-4">
-              <label htmlFor="registration">Registration</label>
-              <Form.Item name="registration">
-                <Input
-                  id="registration"
-                  placeholder="Registration"
-                  className="form-control"
-                  required
-                />
-              </Form.Item>
-            </div>
-            <div className="col-lg-4">
-              <label htmlFor="customerName">Customer Name</label>
-              <Form.Item name="customerName">
-                <Input
-                  id="customerName"
-                  placeholder="customerName"
-                  className="form-control"
-                  required
-                />
-              </Form.Item>
-            </div>
-          </div>
-
-          <div className="text-right pt-2">
-            <button type="submit" className="btn btn-primary btn-w200 m-1">
-              Add new vehicle
-            </button>
-          </div>
-        </div>
-      </Form>
-
+      <img className="img-fluid mb-3" src="/images/mock-map.png" />
       <Table columns={columns} dataSource={vehicles} rowKey={(row) => row.id} />
     </div>
   )
