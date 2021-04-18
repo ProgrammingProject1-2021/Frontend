@@ -12,7 +12,7 @@ interface Cars {
     current_customer: string;
 }
 
-function ViewAvailableCars() {
+export default function ViewAvailableCars() {
     const [errorMsg, setErrorMsg] = useState('')
 
     async function onSubmit(data: Cars) {
@@ -34,15 +34,15 @@ function ViewAvailableCars() {
     return (
         <>
             <div className="main">
-                <h2>View Available Cars</h2>
                 <div className="col-md-8 col-sm-12">
+                    <h2>View Available Cars</h2>
                     <div className="view-available-cars">
                         {errorMsg && (
                             <div className="alert alert-danger" role="alert">
                                 {errorMsg}
                             </div>
                         )}
-                        
+
 
                     </div>
                 </div>
