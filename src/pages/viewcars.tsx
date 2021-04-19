@@ -1,52 +1,70 @@
 import axios, {AxiosResponse} from 'axios'
-import router from 'next/router'
-import { useState } from 'react'
+import {Table, Tag, Space} from 'antd'
+import React, { useState } from 'react'
 
 const API_ENDPOINT =
     'https://ekfj8gcvhh.execute-api.ap-southeast-2.amazonaws.com/test/VehicleAPI'
 
-interface Cars {
+type Cars = {
     registration: string;
     model: string;
-    location_name: number;
+    location_name: string;
     current_customer: string;
 }
 
-export default function ViewAvailableCars() {
-    const [errorMsg, setErrorMsg] = useState('')
+type CarsProps = {
+    cars: Cars[]
+}
 
-    async function onSubmit(data: Cars) {
-        const { model, registration, location_name, current_customer  } = data
-        const [cars, setCarList] = useState<Cars[]>([]);
+export default function ViewAvailableCars({cars}: CarsProps) {
+    const columns = [
+        {
+            title: 'Model',
+            dataIndex: 'Model',
+        },
+        {
+            title: 'Registration',
+            dataIndex: 'Registration',
+        },
+        {
+            title: 'Current Customer',
+            dataIndex: 'Current_customer',
+        },
+        {
+            title: 'Location Name',
+            dataIndex: 'Location_name',
+        },
+    ]
 
-        try {
-            await axios.get<Cars[]>(API_ENDPOINT)
-                .then((response: AxiosResponse) => {
-                    console.log(response.data);
-                    setCarList(response.data);
 
-            });
-        } catch (e) {
-            console.error('Error displaying:', e)
-            setErrorMsg(e.message)
-        }
-    }
     return (
         <>
             <div className="main">
                 <div className="col-md-8 col-sm-12">
-                    <h2>View Available Cars</h2>
                     <div className="view-available-cars">
-                        {errorMsg && (
-                            <div className="alert alert-danger" role="alert">
-                                {errorMsg}
-                            </div>
-                        )}
+                        <h2>View Available Cars</h2>
 
-
+                        <Table columns={columns} dataSource={cars} rowKey="id" />
                     </div>
                 </div>
             </div>
         </>
     )
+}
+
+type carsArray = {
+    Items: Cars[]
+    Count: number
+}
+
+export async function getServerSideProps(context) {
+    const data = await axios.get<carsArray>(API_ENDPOINT)
+
+    const carsData = data.data
+
+    return {
+        props: {
+            cars: carsData.Items,
+        },
+    }
 }
