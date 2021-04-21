@@ -1,4 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.css'
+import 'antd/dist/antd.css'
 
 import App from 'next/app'
 import Head from 'next/head'
