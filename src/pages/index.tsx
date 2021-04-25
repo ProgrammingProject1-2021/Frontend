@@ -28,7 +28,7 @@ function Register() {
         Email: email,
         Name: name,
         Password: password,
-        admin: false,
+        Admin: "false",
       })
       console.log('Registration response', responseData)
     } catch (e) {
