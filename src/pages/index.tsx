@@ -2,9 +2,7 @@ import axios from 'axios'
 import router from 'next/router'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-
-const API_ENDPOINT =
-  'https://bdo08aact3.execute-api.ap-southeast-2.amazonaws.com/Test'
+import { ApiEndpoint } from '../constant/api'
 
 interface IRegistrationInputs {
   email: string
@@ -26,18 +24,13 @@ function Register() {
     }
 
     try {
-      await axios.post(API_ENDPOINT, {
-        operation: 'create',
-        tableName: 'User',
-        payload: {
-          Item: {
-            Email: email,
-            Name: name,
-            Password: password,
-            admin: false,
-          },
-        },
+      const { data: responseData } = await axios.post(ApiEndpoint.register, {
+        Email: email,
+        Name: name,
+        Password: password,
+        Admin: "false",
       })
+      console.log('Registration response', responseData)
     } catch (e) {
       console.error('Error registering', e)
       setErrorMsg(e.message)
@@ -140,18 +133,12 @@ export default function Login() {
     const { email, password } = data
 
     try {
-      await axios.post(API_ENDPOINT, {
-        // TODO: change operation
-        operation: 'create',
-        tableName: 'User',
-        payload: {
-          Item: {
-            Email: email,
-            Password: password,
-            admin: false,
-          },
-        },
+      const { data: responseData } = await axios.post(ApiEndpoint.login, {
+        Email: email,
+        // Password: password,
       })
+
+      console.log('response data', responseData)
 
       router.push({
         pathname: 'dashboard',
