@@ -24,13 +24,12 @@ function Register() {
     }
 
     try {
-      const { data: responseData } = await axios.post(ApiEndpoint.register, {
+      await axios.post(ApiEndpoint.register, {
         Email: email,
         Name: name,
         Password: password,
-        Admin: "false",
+        admin: false,
       })
-      console.log('Registration response', responseData)
     } catch (e) {
       console.error('Error registering', e)
       setErrorMsg(e.message)
@@ -38,23 +37,14 @@ function Register() {
   }
 
   return (
-    <div
-      className="modal fade"
-      id="exampleModal"
-      role="dialog"
-      aria-labelledby="exampleModalLabel"
-      aria-hidden="true">
+    <div className="modal fade" id="exampleModal" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div className="modal-dialog" role="document">
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title" id="exampleModalLabel">
               Registration Form
             </h5>
-            <button
-              type="button"
-              className="close"
-              data-dismiss="modal"
-              aria-label="Close">
+            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
@@ -67,22 +57,10 @@ function Register() {
               )}
 
               <label>Email</label>
-              <input
-                {...register('email')}
-                type="email"
-                className="form-control mb-3"
-                placeholder="Email"
-                required
-              />
+              <input {...register('email')} type="email" className="form-control mb-3" placeholder="Email" required />
 
               <label>Name</label>
-              <input
-                {...register('name')}
-                type="text"
-                className="form-control mb-3"
-                placeholder="Name"
-                required
-              />
+              <input {...register('name')} type="text" className="form-control mb-3" placeholder="Name" required />
 
               <label>Password</label>
               <input
@@ -102,10 +80,7 @@ function Register() {
               />
             </div>
             <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                data-dismiss="modal">
+              <button type="button" className="btn btn-secondary" data-dismiss="modal">
                 Close
               </button>
               <button type="submit" className="btn btn-primary">
@@ -133,12 +108,10 @@ export default function Login() {
     const { email, password } = data
 
     try {
-      const { data: responseData } = await axios.post(ApiEndpoint.login, {
+      await axios.post(ApiEndpoint.login, {
         Email: email,
-        // Password: password,
+        Password: password,
       })
-
-      console.log('response data', responseData)
 
       router.push({
         pathname: 'dashboard',
@@ -172,30 +145,16 @@ export default function Login() {
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="form-group">
                 <label>Email</label>
-                <input
-                  {...register('email')}
-                  type="email"
-                  className="form-control"
-                  placeholder="Email"
-                />
+                <input {...register('email')} type="email" className="form-control" placeholder="Email" />
               </div>
               <div className="form-group">
                 <label>Password</label>
-                <input
-                  {...register('password')}
-                  type="password"
-                  className="form-control"
-                  placeholder="Password"
-                />
+                <input {...register('password')} type="password" className="form-control" placeholder="Password" />
               </div>
               <button type="submit" className="btn btn-black mr-3">
                 Login
               </button>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                data-toggle="modal"
-                data-target="#exampleModal">
+              <button type="button" className="btn btn-secondary" data-toggle="modal" data-target="#exampleModal">
                 Register
               </button>
             </form>

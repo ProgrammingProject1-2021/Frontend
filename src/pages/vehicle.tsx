@@ -8,9 +8,10 @@ import { ApiEndpoint } from '../constant/api'
 
 type Vehicle = {
   id: string
-  carModel: string
+  model: string
   registration: string
-  customerName: string
+  currentCustomer: string
+  locationName: string
 }
 
 type VehiclePageProps = {
@@ -21,18 +22,23 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
   const columns = [
     {
       title: 'Model',
-      dataIndex: 'carModel',
-      ...getColumnSearchProps('carModel'),
+      dataIndex: 'Model',
+      ...getColumnSearchProps('Model'),
     },
     {
       title: 'Registration',
-      dataIndex: 'registration',
-      ...getColumnSearchProps('registration'),
+      dataIndex: 'Registration',
+      ...getColumnSearchProps('Registration'),
     },
     {
-      title: 'Customer Name',
-      dataIndex: 'customerName',
-      ...getColumnSearchProps('customerName'),
+      title: 'Current Customer',
+      dataIndex: 'Current_customer',
+      ...getColumnSearchProps('Current_customer'),
+    },
+    {
+      title: 'Location Name',
+      dataIndex: 'Location_name',
+      ...getColumnSearchProps('Location_name'),
     },
   ]
 
@@ -45,20 +51,13 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
 
   function getColumnSearchProps(dataIndex) {
     return {
-      filterDropdown: ({
-        setSelectedKeys,
-        selectedKeys,
-        confirm,
-        clearFilters,
-      }) => (
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
         <div style={{ padding: 8 }}>
           <Input
             ref={searchInputEl}
             placeholder={`Search ${dataIndex}`}
             value={selectedKeys[0]}
-            onChange={(e) =>
-              setSelectedKeys(e.target.value ? [e.target.value] : [])
-            }
+            onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
             onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
             style={{ width: 188, marginBottom: 8, display: 'block' }}
           />
@@ -71,10 +70,7 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
               style={{ width: 90 }}>
               Search
             </Button>
-            <Button
-              onClick={() => handleReset(clearFilters)}
-              size="small"
-              style={{ width: 90 }}>
+            <Button onClick={() => handleReset(clearFilters)} size="small" style={{ width: 90 }}>
               Reset
             </Button>
             <Button
@@ -92,16 +88,9 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
           </Space>
         </div>
       ),
-      filterIcon: (filtered: boolean) => (
-        <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
-      ),
+      filterIcon: (filtered: boolean) => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
       onFilter: (value: string, record) =>
-        record[dataIndex]
-          ? record[dataIndex]
-              .toString()
-              .toLowerCase()
-              .includes(value.toLowerCase())
-          : '',
+        record[dataIndex] ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()) : '',
       onFilterDropdownVisibleChange: (visible: boolean) => {
         if (visible) {
           setTimeout(() => searchInputEl.current.select(), 100)
@@ -137,15 +126,18 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
   async function handleSubmit() {
     await form.validateFields()
 
-    const { carModel, registration, customerName } = form.getFieldsValue()
+    const { model, registration, currentCustomer, locationName } = form.getFieldsValue()
+    const payload = {
+      Model: model,
+      Registration: registration,
+      Current_customer: currentCustomer,
+      Location_Name: locationName,
+    }
 
     try {
       // Send data to backend
-      await axios.post(ApiEndpoint.vehicle, {
-        carModel,
-        registration,
-        customerName,
-      })
+      console.log('sending data', payload)
+      await axios.post(ApiEndpoint.vehicle, payload)
       router.reload()
     } catch ({ message }) {
       console.error('Error sending vehicle info', message)
@@ -162,40 +154,30 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
         <div className="form-group">
           <div className="row">
             <div className="col-lg-4">
-              <label htmlFor="carModel">Car Model</label>
-              <Form.Item name="carModel">
-                <Input
-                  id="carModel"
-                  placeholder="Car Model"
-                  className="form-control"
-                  required
-                />
+              <label htmlFor="model">Car Model</label>
+              <Form.Item name="model">
+                <Input id="model" placeholder="Car Model" className="form-control" required />
               </Form.Item>
             </div>
             <div className="col-lg-4">
               <label htmlFor="registration">Registration</label>
               <Form.Item name="registration">
-                <Input
-                  id="registration"
-                  placeholder="Registration"
-                  className="form-control"
-                  required
-                />
+                <Input id="registration" placeholder="Registration" className="form-control" required />
               </Form.Item>
             </div>
             <div className="col-lg-4">
-              <label htmlFor="customerName">Customer Name</label>
-              <Form.Item name="customerName">
-                <Input
-                  id="customerName"
-                  placeholder="customerName"
-                  className="form-control"
-                  required
-                />
+              <label htmlFor="currentCustomer">Customer Name</label>
+              <Form.Item name="currentCustomer">
+                <Input id="currentCustomer" placeholder="customerName" className="form-control" required />
+              </Form.Item>
+            </div>
+            <div className="col-lg-4">
+              <label htmlFor="locationName">Location Name</label>
+              <Form.Item name="locationName">
+                <Input id="locationName" placeholder="locationName" className="form-control" required />
               </Form.Item>
             </div>
           </div>
-
           <div className="text-right pt-2">
             <button type="submit" className="btn btn-primary btn-w200 m-1">
               Add new vehicle
@@ -203,20 +185,24 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
           </div>
         </div>
       </Form>
-
-      <Table columns={columns} dataSource={vehicles} rowKey={(row) => row.id} />
+      <Table columns={columns} dataSource={vehicles} rowKey="id" />
     </div>
   )
 }
 
-export async function getServerSideProps(context) {
-  const res = await axios.get(ApiEndpoint.vehicle)
+type VehicleResponse = {
+  Items: Vehicle[]
+  Count: number
+}
 
-  const vehicles = res.data
+export async function getServerSideProps(context) {
+  const res = await axios.get<VehicleResponse>(ApiEndpoint.vehicle)
+
+  const vehiclesRes = res.data
 
   return {
     props: {
-      vehicles,
+      vehicles: vehiclesRes.Items,
     },
   }
 }
