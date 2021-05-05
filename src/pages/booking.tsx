@@ -1,17 +1,20 @@
 import { SearchOutlined } from '@ant-design/icons'
 import { Button, Input, notification, Space, Table } from 'antd'
-import axios from 'axios'
-import router from 'next/router'
+import axios, { AxiosResponse } from 'axios'
+import { GetServerSidePropsContext } from 'next'
+import { useRouter } from 'next/router'
 import React, { useRef, useState } from 'react'
 import Highlighter from 'react-highlight-words'
+import MapView from '../components/map'
 import { ApiEndpoint } from '../constant/api'
-import { Vehicle, VehicleResponse } from '../types/vehicle'
+import { Location, Vehicle, VehicleResponse } from '../types'
 
 type BookingPageProps = {
   vehicles: Vehicle[]
+  locations: Location[]
 }
 
-export default function BookingPage({ vehicles }: BookingPageProps) {
+export default function BookingPage({ locations, vehicles }: BookingPageProps) {
   const columns = [
     {
       title: 'Model',
@@ -35,6 +38,7 @@ export default function BookingPage({ vehicles }: BookingPageProps) {
     },
   ]
 
+  const router = useRouter()
   const [searchState, setSearchState] = useState({
     searchText: '',
     searchedColumn: '',
@@ -124,6 +128,12 @@ export default function BookingPage({ vehicles }: BookingPageProps) {
     }
   }
 
+  // When the user clicks a maker on the map, navigate to the same page with query parameter
+  // of location name.
+  function handleMarker(loc: string) {
+    router.push('/booking?location_name=' + loc)
+  }
+
   function handleSearch(selectedKeys, confirm, dataIndex) {
     confirm()
     setSearchState({
@@ -140,20 +150,44 @@ export default function BookingPage({ vehicles }: BookingPageProps) {
 
   return (
     <div className="container pt-4 pb-3">
-      <img className="img-fluid mb-3" src="/images/mock-map.png" />
+      <MapView locations={locations} handleMarker={handleMarker} />
       <Table columns={columns} dataSource={vehicles} rowKey={(row) => row.id} />
     </div>
   )
 }
 
-export async function getServerSideProps(context) {
-  const res = await axios.get<VehicleResponse>(ApiEndpoint.vehicle)
+type LocationsResponse = {
+  Items: Location[]
+  Count: number
+}
 
-  console.log('Response data', res.data)
+export async function getServerSideProps(ctx: GetServerSidePropsContext) {
+  const vehicleRes = await axios.get<VehicleResponse>(ApiEndpoint.vehicle)
+
+  console.log('Vehicle data', vehicleRes.data)
+
+  let locationRes: AxiosResponse<LocationsResponse>
+
+  // Get query parameter from url (?location_name=)
+  const locationName = ctx.query?.location_name
+  if (locationName) {
+    locationRes = await axios.get<LocationsResponse>(`${ApiEndpoint.parkingLocations}/${locationName}`)
+
+    // console.log('Response data', locationRes.data)
+  } else {
+    // locationRes = await axios.get<LocationsResponse>(ApiEndpoint.parkingLocations)
+    // console.log('Response data', locationRes.data)
+  }
 
   return {
     props: {
-      vehicles: res.data.Items,
+      vehicles: vehicleRes.data.Items,
+      // TODO: Remove mock data
+      // locations: locationRes.data.Items
+      locations: [
+        { Name: 'Melbourne', Location_latitude: -37.840935, Location_longitude: 144.946457 },
+        { Name: 'Clayton', Location_latitude: -37.851934, Location_longitude: 144.958457 },
+      ],
     },
   }
 }

@@ -1,3 +1,9 @@
+export type Location = {
+  Name: string
+  Location_latitude: number
+  Location_longitude: number
+}
+
 export type Vehicle = {
   Model: string
   Registration: string

@@ -131,7 +131,7 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
       Model: model,
       Registration: registration,
       Current_customer: currentCustomer,
-      Location_name: locationName,
+      Location_Name: locationName,
     }
 
     try {
