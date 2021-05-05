@@ -6,9 +6,9 @@ import React, { useRef, useState } from 'react'
 // @ts-ignore
 import Highlighter from 'react-highlight-words'
 import { ApiEndpoint } from '../constant/api'
+import { Vehicle, VehicleResponse } from '../types/vehicle'
 
-type Vehicle = {
-  id: string
+type VehicleForm = {
   model: string
   registration: string
   currentCustomer: string
@@ -48,7 +48,7 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
     searchedColumn: '',
   })
   const searchInputEl = useRef(null)
-  const [form] = Form.useForm<Vehicle>()
+  const [form] = Form.useForm<VehicleForm>()
 
   function getColumnSearchProps(dataIndex) {
     return {
@@ -132,7 +132,7 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
       Model: model,
       Registration: registration,
       Current_customer: currentCustomer,
-      Location_Name: locationName,
+      Location_name: locationName,
     }
 
     try {
@@ -189,11 +189,6 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
       <Table columns={columns} dataSource={vehicles} rowKey="id" />
     </div>
   )
-}
-
-type VehicleResponse = {
-  Items: Vehicle[]
-  Count: number
 }
 
 export async function getServerSideProps(context) {
