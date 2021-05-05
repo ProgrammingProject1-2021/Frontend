@@ -5,13 +5,7 @@ import router from 'next/router'
 import React, { useRef, useState } from 'react'
 import Highlighter from 'react-highlight-words'
 import { ApiEndpoint } from '../constant/api'
-
-type Vehicle = {
-  id: string
-  carModel: string
-  registration: string
-  customerName: string
-}
+import { Vehicle, VehicleResponse } from '../types/vehicle'
 
 type BookingPageProps = {
   vehicles: Vehicle[]
@@ -21,31 +15,23 @@ export default function BookingPage({ vehicles }: BookingPageProps) {
   const columns = [
     {
       title: 'Model',
-      dataIndex: 'carModel',
-      ...getColumnSearchProps('carModel'),
+      dataIndex: 'Model',
+      ...getColumnSearchProps('Model'),
     },
     {
       title: 'Registration',
-      dataIndex: 'registration',
-      ...getColumnSearchProps('registration'),
+      dataIndex: 'Registration',
+      ...getColumnSearchProps('Registration'),
     },
     {
-      title: 'Location',
-      dataIndex: 'location',
-      ...getColumnSearchProps('location'),
+      title: 'Current Customer',
+      dataIndex: 'Current_customer',
+      ...getColumnSearchProps('Current_customer'),
     },
     {
-      title: 'Action',
-      dataIndex: 'customerName',
-      render: (name: string, row: Vehicle) => {
-        // Render button only when customer name is empty (null or empty string)
-        if (!name)
-          return (
-            <button onClick={() => handleBooking(row.id)} className="btn btn-success btn-sm">
-              Booking
-            </button>
-          )
-      },
+      title: 'Location Name',
+      dataIndex: 'Location_name',
+      ...getColumnSearchProps('Location_name'),
     },
   ]
 
@@ -161,13 +147,13 @@ export default function BookingPage({ vehicles }: BookingPageProps) {
 }
 
 export async function getServerSideProps(context) {
-  const res = await axios.get(ApiEndpoint.vehicle)
+  const res = await axios.get<VehicleResponse>(ApiEndpoint.vehicle)
 
-  const vehicles = res.data
+  console.log('Response data', res.data)
 
   return {
     props: {
-      vehicles,
+      vehicles: res.data.Items,
     },
   }
 }
