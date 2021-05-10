@@ -6,6 +6,7 @@ import Head from 'next/head'
 import React from 'react'
 
 import '../styles/login.css'
+import '../styles/returnpage.css'
 
 class MyApp extends App {
   render() {

@@ -1,17 +1,10 @@
 import React, { useRef, useState } from 'react'
 import { Navbar, Nav, NavDropdown} from 'react-bootstrap';
-
-const styles = {
-    backgroundImage: `url(/images/background.jpg)`,
-    backgroundPosition: 'center',
-    backgroundSize: 'cover',
-    backgroundRepeat: 'no-repeat',
-    width: '100vw',
-    height: '100vh'
-};
+import Link from 'next/link'
 
 
-export default function Main() {
+export default function Returnpage({vehicles}) {
+    console.log(vehicles)
     return (
         <div className="main-page">
             <div className="row">
@@ -30,17 +23,32 @@ export default function Main() {
                     </Navbar>
                 </div>
             </div>
-            <div className="row">
-                <div className="main-content" style={styles}>
-                    <div className="main-page-header">
-                        <div className="col-md-12">
-                            <div style={{display: 'flex',  justifyContent:'center', alignItems:'center', height: '100vh'}}>
-                                <h1 style={{color: 'white'}}>Welcome to CHS: car hiring service</h1>
-                            </div>
-                        </div>         
+            <h1>Edit your booked vehicle here</h1>
+            <div className="row mt-5">
+                <div className="col-md-12">
+                    <div style={{justifyContent:'center', alignItems:'center', height: '100vh'}}>
+                        <Link href="/vehiclesedit">
+                            <a className ="card">
+                                { Object.keys(vehicles.Items).map((vehicle) => (
+                                    <h3>{vehicle.toString()}</h3>
+                                ))}
+                            </a>
+                        </Link>
                     </div>
                 </div>
             </div>
         </div>
     );
 }
+
+export const getStaticProps = async () => {
+    // Need to appent current user at the back of the API link. if return null, render smtg
+    const res = await fetch('https://ekfj8gcvhh.execute-api.ap-southeast-2.amazonaws.com/test/VehicleAPI')
+    const vehicles = await res.json()
+    return {
+        props: {
+            vehicles
+        }
+    }
+}
+
