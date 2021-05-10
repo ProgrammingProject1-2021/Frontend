@@ -15,3 +15,8 @@ export type VehicleResponse = {
   Items: Vehicle[]
   Count: number
 }
+
+export type LocationsResponse = {
+  Items: Location[]
+  Count: number
+}

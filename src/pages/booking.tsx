@@ -7,7 +7,7 @@ import React, { useRef, useState } from 'react'
 import Highlighter from 'react-highlight-words'
 import MapView from '../components/map'
 import { ApiEndpoint } from '../constant/api'
-import { Location, Vehicle, VehicleResponse } from '../types'
+import { Location, LocationsResponse, Vehicle, VehicleResponse } from '../types'
 
 type BookingPageProps = {
   vehicles: Vehicle[]
@@ -156,38 +156,22 @@ export default function BookingPage({ locations, vehicles }: BookingPageProps) {
   )
 }
 
-type LocationsResponse = {
-  Items: Location[]
-  Count: number
-}
-
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
-  const vehicleRes = await axios.get<VehicleResponse>(ApiEndpoint.vehicle)
-
-  console.log('Vehicle data', vehicleRes.data)
-
-  let locationRes: AxiosResponse<LocationsResponse>
+  const locationRes = await axios.get<LocationsResponse>(ApiEndpoint.parkingLocations)
+  let vehicleRes: AxiosResponse<VehicleResponse>
 
   // Get query parameter from url (?location_name=)
   const locationName = ctx.query?.location_name
   if (locationName) {
-    locationRes = await axios.get<LocationsResponse>(`${ApiEndpoint.parkingLocations}/${locationName}`)
-
-    // console.log('Response data', locationRes.data)
+    vehicleRes = await axios.get<VehicleResponse>(`${ApiEndpoint.vehicle}?Location_name=${locationName}`)
   } else {
-    // locationRes = await axios.get<LocationsResponse>(ApiEndpoint.parkingLocations)
-    // console.log('Response data', locationRes.data)
+    vehicleRes = await axios.get<VehicleResponse>(ApiEndpoint.vehicle)
   }
 
   return {
     props: {
       vehicles: vehicleRes.data.Items,
-      // TODO: Remove mock data
-      // locations: locationRes.data.Items
-      locations: [
-        { Name: 'Melbourne', Location_latitude: -37.840935, Location_longitude: 144.946457 },
-        { Name: 'Clayton', Location_latitude: -37.851934, Location_longitude: 144.958457 },
-      ],
+      locations: locationRes.data.Items,
     },
   }
 }
