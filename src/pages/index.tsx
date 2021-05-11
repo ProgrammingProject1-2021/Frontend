@@ -123,7 +123,7 @@ export default function Login() {
       localStorage.setItem(StorageKey.EMAIL, email)
 
       router.push({
-        pathname: 'booking',
+        pathname: 'main',
       })
     } catch (e) {
       console.error('Error logging in', e)
