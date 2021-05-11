@@ -1,6 +1,7 @@
+import { notification } from 'antd'
 import axios from 'axios'
 import router from 'next/router'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { ApiEndpoint } from '../constant/api'
 
@@ -14,6 +15,7 @@ interface IRegistrationInputs {
 function Register() {
   const [errorMsg, setErrorMsg] = useState('')
   const { register, handleSubmit } = useForm<IRegistrationInputs>()
+  const closeButtonElement = useRef<HTMLInputElement>()
 
   async function onSubmit(data: IRegistrationInputs) {
     const { email, name, password, confirmPassword } = data
@@ -22,13 +24,18 @@ function Register() {
       setErrorMsg('Password mismatch')
       return
     }
+    setErrorMsg('')
 
     try {
       await axios.post(ApiEndpoint.register, {
         Email: email,
         Name: name,
         Password: password,
-        Admin: "false",
+        Admin: 'false',
+      })
+      closeButtonElement.current.click()
+      notification.success({
+        message: 'Registration Successful',
       })
     } catch (e) {
       console.error('Error registering', e)
@@ -44,7 +51,7 @@ function Register() {
             <h5 className="modal-title" id="exampleModalLabel">
               Registration Form
             </h5>
-            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+            <button ref={closeButtonElement} type="button" className="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
