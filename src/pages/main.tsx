@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react'
-import { Navbar, Nav, NavDropdown } from 'react-bootstrap'
+import React from 'react'
+import Navigation from '../components/navigation'
 
 const styles = {
   backgroundImage: `url(/images/background.jpg)`,
@@ -13,22 +13,7 @@ const styles = {
 export default function Main() {
   return (
     <div className="main-page">
-      <div className="row">
-        <div className="navbar">
-          <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark" fixed="top">
-            <Navbar.Brand href="/main">CHS</Navbar.Brand>
-            <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-            <Navbar.Collapse id="responsive-navbar-nav">
-              <Nav className="mr-auto">
-                <Nav.Link href="/booking">Map/Book Vehicle</Nav.Link>
-                <Nav.Link href="/returnvehicle">Return Vehicle</Nav.Link>
-                <Nav.Link href="/dashboard">View History</Nav.Link>
-                <Nav.Link href="#profile">Edit Profile</Nav.Link>
-              </Nav>
-            </Navbar.Collapse>
-          </Navbar>
-        </div>
-      </div>
+      <Navigation />
       <div className="row">
         <div className="main-content" style={styles}>
           <div className="main-page-header">

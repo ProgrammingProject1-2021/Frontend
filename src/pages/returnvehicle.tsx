@@ -1,11 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { Navbar, Nav, Container, Col, Row } from 'react-bootstrap'
-import { Button, Input, notification, Space, Table } from 'antd'
-import Link from 'next/link'
-import { Vehicle, VehicleResponse } from '../types'
+import { notification } from 'antd'
 import axios from 'axios'
-import { StorageKey } from '../constant/storage'
+import Link from 'next/link'
+import React, { useEffect, useState } from 'react'
+import { Col, Container, Row } from 'react-bootstrap'
+import Navigation from '../components/navigation'
 import { ApiEndpoint } from '../constant/api'
+import { StorageKey } from '../constant/storage'
+import { Vehicle, VehicleResponse } from '../types'
 
 export default function Returnpage() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([])
@@ -34,22 +35,8 @@ export default function Returnpage() {
 
   return (
     <div className="main-page">
-      <div className="row">
-        <div className="navbar">
-          <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark" fixed="top">
-            <Navbar.Brand href="/main">CHS</Navbar.Brand>
-            <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-            <Navbar.Collapse id="responsive-navbar-nav">
-              <Nav className="mr-auto">
-                <Nav.Link href="/booking">Map/Book Vehicle</Nav.Link>
-                <Nav.Link href="/returnvehicle">Return Vehicle</Nav.Link>
-                <Nav.Link href="/dashboard">View History</Nav.Link>
-                <Nav.Link href="#profile">Edit Profile</Nav.Link>
-              </Nav>
-            </Navbar.Collapse>
-          </Navbar>
-        </div>
-      </div>
+      <Navigation />
+
       <h1>Please select your booked vehicle</h1>
       <div className="row mt-5">
         <div className="col-md-12">

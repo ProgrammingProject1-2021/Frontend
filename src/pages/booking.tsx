@@ -6,6 +6,7 @@ import { useRouter } from 'next/router'
 import React, { useRef, useState } from 'react'
 import Highlighter from 'react-highlight-words'
 import MapView from '../components/map'
+import Navigation from '../components/navigation'
 import { ApiEndpoint } from '../constant/api'
 import { Location, LocationsResponse, Vehicle, VehicleResponse } from '../types'
 
@@ -157,6 +158,8 @@ export default function BookingPage({ locations, vehicles }: BookingPageProps) {
 
   return (
     <div className="container pt-4 pb-3">
+      <Navigation />
+
       <MapView locations={locations} handleMarker={handleMarker} />
       <Table columns={columns} dataSource={vehicles} rowKey={(row) => row.id} />
     </div>
