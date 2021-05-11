@@ -3,6 +3,7 @@ import { Button, Form, Input, notification, Space, Table } from 'antd'
 import axios from 'axios'
 import router from 'next/router'
 import React, { useRef, useState } from 'react'
+// @ts-ignore
 import Highlighter from 'react-highlight-words'
 import { ApiEndpoint } from '../constant/api'
 import { Vehicle, VehicleResponse } from '../types/vehicle'
