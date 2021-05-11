@@ -4,6 +4,7 @@ import router from 'next/router'
 import { useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { ApiEndpoint } from '../constant/api'
+import { StorageKey } from '../constant/storage'
 
 interface IRegistrationInputs {
   email: string
@@ -119,6 +120,7 @@ export default function Login() {
         Email: email,
         Password: password,
       })
+      localStorage.setItem(StorageKey.EMAIL, email)
 
       router.push({
         pathname: 'booking',

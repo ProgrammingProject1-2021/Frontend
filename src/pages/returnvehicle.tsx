@@ -1,10 +1,37 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Navbar, Nav, Container, Col, Row } from 'react-bootstrap'
+import { Button, Input, notification, Space, Table } from 'antd'
 import Link from 'next/link'
+import { Vehicle, VehicleResponse } from '../types'
+import axios from 'axios'
+import { StorageKey } from '../constant/storage'
+import { ApiEndpoint } from '../constant/api'
 
-export default function Returnpage({ vehicles }) {
-  console.log(vehicles)
-  const data = vehicles
+export default function Returnpage() {
+  const [vehicles, setVehicles] = useState<Vehicle[]>([])
+
+  useEffect(() => {
+    async function fetchApi() {
+      const email = localStorage.getItem(StorageKey.EMAIL)
+      try {
+        const vehicleRes = await axios.get<VehicleResponse>(`${ApiEndpoint.vehicle}?Current_customer=${email}`)
+
+        console.log('vehicle response', vehicleRes)
+
+        setVehicles(vehicleRes?.data?.Items)
+      } catch (error) {
+        const message = error?.response ? error?.response?.data?.message : error.message
+
+        notification.error({
+          message: 'Error',
+          description: message,
+        })
+      }
+    }
+
+    fetchApi()
+  }, [])
+
   return (
     <div className="main-page">
       <div className="row">
@@ -53,10 +80,10 @@ export default function Returnpage({ vehicles }) {
                                   src="https://images.unsplash.com/photo-1597404294360-feeeda04612e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80"></img>
                               </Col>
                               <Col xs lg="9">
-                                {Object.keys(data.Item).map((key, i) => (
+                                {Object.keys(vehicles).map((key, i) => (
                                   <p key={i}>
                                     <span>{key}: </span>
-                                    <span>{data.Item[key]}</span>
+                                    <span>{vehicles[key]}</span>
                                   </p>
                                 ))}
                               </Col>
@@ -73,17 +100,4 @@ export default function Returnpage({ vehicles }) {
       </div>
     </div>
   )
-}
-
-export const getStaticProps = async () => {
-  /**
-   *TODO: Need to append current user at the back of the API link. for eg: ..../VehicleAPI?Current_customer={'username'}
-   */
-  const res = await fetch('https://ekfj8gcvhh.execute-api.ap-southeast-2.amazonaws.com/test/VehicleAPI/098765')
-  const vehicles = await res.json()
-  return {
-    props: {
-      vehicles,
-    },
-  }
 }
