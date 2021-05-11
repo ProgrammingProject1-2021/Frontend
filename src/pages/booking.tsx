@@ -157,21 +157,32 @@ export default function BookingPage({ locations, vehicles }: BookingPageProps) {
 }
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
-  const locationRes = await axios.get<LocationsResponse>(ApiEndpoint.parkingLocations)
-  let vehicleRes: AxiosResponse<VehicleResponse>
+  let props: BookingPageProps = { vehicles: [], locations: [] }
 
-  // Get query parameter from url (?location_name=)
-  const locationName = ctx.query?.location_name
-  if (locationName) {
-    vehicleRes = await axios.get<VehicleResponse>(`${ApiEndpoint.vehicle}?Location_name=${locationName}`)
-  } else {
-    vehicleRes = await axios.get<VehicleResponse>(ApiEndpoint.vehicle)
+  try {
+    const locationRes = await axios.get<LocationsResponse>(ApiEndpoint.parkingLocations)
+    let vehicleRes: AxiosResponse<VehicleResponse>
+    // Get query parameter from url (?location_name=)
+    const locationName = ctx.query?.location_name
+    if (locationName) {
+      vehicleRes = await axios.get<VehicleResponse>(`${ApiEndpoint.vehicle}?Location_name=${locationName}`)
+    } else {
+      vehicleRes = await axios.get<VehicleResponse>(ApiEndpoint.vehicle)
+    }
+
+    props = {
+      vehicles: vehicleRes.data.Items,
+      locations: locationRes.data.Items,
+    }
+  } catch ({ response, message }) {
+    if (response) {
+      console.error('Error getting vehicles and locations', response?.data?.message)
+    } else {
+      console.error(message)
+    }
   }
 
   return {
-    props: {
-      vehicles: vehicleRes.data.Items,
-      locations: locationRes.data.Items,
-    },
+    props,
   }
 }
