@@ -27,14 +27,17 @@ export default function BookingPage({ locations, vehicles }: BookingPageProps) {
       ...getColumnSearchProps('Registration'),
     },
     {
-      title: 'Current Customer',
-      dataIndex: 'Current_customer',
-      ...getColumnSearchProps('Current_customer'),
-    },
-    {
       title: 'Location Name',
       dataIndex: 'Location_name',
       ...getColumnSearchProps('Location_name'),
+    },
+    {
+      title: 'Action',
+      render: (row: Vehicle) => (
+        <Button type="primary" onClick={() => handleBooking(row)} style={{ width: 90 }}>
+          Book
+        </Button>
+      ),
     },
   ]
 
@@ -45,7 +48,11 @@ export default function BookingPage({ locations, vehicles }: BookingPageProps) {
   })
   const searchInputEl = useRef(null)
 
-  async function handleBooking(carId: string) {
+  async function handleBooking(vehicle: Vehicle) {
+    console.log('Booking vehicle', vehicle)
+
+    // TODO: change carId to selected car
+    const carId = ''
     try {
       const { data: responseData } = await axios.put(ApiEndpoint.vehicle + carId, { customerName: 'North' })
       console.log('Booking response', responseData)
