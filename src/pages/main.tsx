@@ -17,11 +17,11 @@ export default function Main() {
             <div className="row">
                 <div className="navbar">
                     <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark" fixed="top">
-                        <Navbar.Brand href="/">CHS</Navbar.Brand>
+                        <Navbar.Brand href="/main">CHS</Navbar.Brand>
                             <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                                 <Navbar.Collapse id="responsive-navbar-nav">
                                     <Nav className="mr-auto">
-                                        <Nav.Link href="#map">Map/Book Vehicle</Nav.Link>
+                                        <Nav.Link href="/booking">Map/Book Vehicle</Nav.Link>
                                         <Nav.Link href="/returnvehicle">Return Vehicle</Nav.Link>
                                         <Nav.Link href="/dashboard">View History</Nav.Link>
                                         <Nav.Link href="#profile">Edit Profile</Nav.Link>

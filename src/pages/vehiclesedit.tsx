@@ -7,7 +7,7 @@ export default function Returnpage({vehicles}) {
             <div className="row">
                 <div className="navbar">
                     <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark" fixed="top">
-                        <Navbar.Brand href="/">CHS</Navbar.Brand>
+                        <Navbar.Brand href="/main">CHS</Navbar.Brand>
                             <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                                 <Navbar.Collapse id="responsive-navbar-nav">
                                     <Nav className="mr-auto">
@@ -20,7 +20,7 @@ export default function Returnpage({vehicles}) {
                     </Navbar>
                 </div>
             </div>
-            <h1>Returing Vehicle</h1>
+            <h1>Returning Vehicle page in progress.....</h1>
          </div>
     );
 }

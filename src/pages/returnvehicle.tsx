@@ -11,11 +11,11 @@ export default function Returnpage({vehicles}) {
             <div className="row">
                 <div className="navbar">
                     <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark" fixed="top">
-                        <Navbar.Brand href="/">CHS</Navbar.Brand>
+                        <Navbar.Brand href="/main">CHS</Navbar.Brand>
                             <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                                 <Navbar.Collapse id="responsive-navbar-nav">
                                     <Nav className="mr-auto">
-                                        <Nav.Link href="#map">Map/Book Vehicle</Nav.Link>
+                                        <Nav.Link href="/booking">Map/Book Vehicle</Nav.Link>
                                         <Nav.Link href="/returnvehicle">Return Vehicle</Nav.Link>
                                         <Nav.Link href="/dashboard">View History</Nav.Link>
                                         <Nav.Link href="#profile">Edit Profile</Nav.Link>
@@ -44,6 +44,7 @@ export default function Returnpage({vehicles}) {
                                                                             <img className="image"
                                                                                 width="215"
                                                                                 height="155"
+                                                                                // TODO: use url from database {'url'} so its not hardcoded, not now but after demo due to backend is not updated.
                                                                                 src="https://images.unsplash.com/photo-1597404294360-feeeda04612e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80"
                                                                             ></img>
                                                                         </Col>
@@ -70,7 +71,9 @@ export default function Returnpage({vehicles}) {
 }
 
 export const getStaticProps = async () => {
-    // Need to append current user at the back of the API link. 
+    /**
+    *TODO: Need to append current user at the back of the API link. for eg: ..../VehicleAPI?Current_customer={'username'}
+    */
     const res = await fetch('https://ekfj8gcvhh.execute-api.ap-southeast-2.amazonaws.com/test/VehicleAPI/098765')
     const vehicles = await res.json()
     return {
