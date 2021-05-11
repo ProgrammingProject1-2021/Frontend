@@ -1,17 +1,20 @@
 import { SearchOutlined } from '@ant-design/icons'
 import { Button, Input, notification, Space, Table } from 'antd'
-import axios from 'axios'
-import router from 'next/router'
+import axios, { AxiosResponse } from 'axios'
+import { GetServerSidePropsContext } from 'next'
+import { useRouter } from 'next/router'
 import React, { useRef, useState } from 'react'
 import Highlighter from 'react-highlight-words'
+import MapView from '../components/map'
 import { ApiEndpoint } from '../constant/api'
-import { Vehicle, VehicleResponse } from '../types/vehicle'
+import { Location, LocationsResponse, Vehicle, VehicleResponse } from '../types'
 
 type BookingPageProps = {
   vehicles: Vehicle[]
+  locations: Location[]
 }
 
-export default function BookingPage({ vehicles }: BookingPageProps) {
+export default function BookingPage({ locations, vehicles }: BookingPageProps) {
   const columns = [
     {
       title: 'Model',
@@ -24,24 +27,32 @@ export default function BookingPage({ vehicles }: BookingPageProps) {
       ...getColumnSearchProps('Registration'),
     },
     {
-      title: 'Current Customer',
-      dataIndex: 'Current_customer',
-      ...getColumnSearchProps('Current_customer'),
-    },
-    {
       title: 'Location Name',
       dataIndex: 'Location_name',
       ...getColumnSearchProps('Location_name'),
     },
+    {
+      title: 'Action',
+      render: (row: Vehicle) => (
+        <Button type="primary" onClick={() => handleBooking(row)} style={{ width: 90 }}>
+          Book
+        </Button>
+      ),
+    },
   ]
 
+  const router = useRouter()
   const [searchState, setSearchState] = useState({
     searchText: '',
     searchedColumn: '',
   })
   const searchInputEl = useRef(null)
 
-  async function handleBooking(carId: string) {
+  async function handleBooking(vehicle: Vehicle) {
+    console.log('Booking vehicle', vehicle)
+
+    // TODO: change carId to selected car
+    const carId = ''
     try {
       const { data: responseData } = await axios.put(ApiEndpoint.vehicle + carId, { customerName: 'North' })
       console.log('Booking response', responseData)
@@ -124,6 +135,12 @@ export default function BookingPage({ vehicles }: BookingPageProps) {
     }
   }
 
+  // When the user clicks a maker on the map, navigate to the same page with query parameter
+  // of location name.
+  function handleMarker(loc: string) {
+    router.push('/booking?location_name=' + loc)
+  }
+
   function handleSearch(selectedKeys, confirm, dataIndex) {
     confirm()
     setSearchState({
@@ -140,20 +157,39 @@ export default function BookingPage({ vehicles }: BookingPageProps) {
 
   return (
     <div className="container pt-4 pb-3">
-      <img className="img-fluid mb-3" src="/images/mock-map.png" />
+      <MapView locations={locations} handleMarker={handleMarker} />
       <Table columns={columns} dataSource={vehicles} rowKey={(row) => row.id} />
     </div>
   )
 }
 
-export async function getServerSideProps(context) {
-  const res = await axios.get<VehicleResponse>(ApiEndpoint.vehicle)
+export async function getServerSideProps(ctx: GetServerSidePropsContext) {
+  let props: BookingPageProps = { vehicles: [], locations: [] }
 
-  console.log('Response data', res.data)
+  try {
+    const locationRes = await axios.get<LocationsResponse>(ApiEndpoint.parkingLocations)
+    let vehicleRes: AxiosResponse<VehicleResponse>
+    // Get query parameter from url (?location_name=)
+    const locationName = ctx.query?.location_name
+    if (locationName) {
+      vehicleRes = await axios.get<VehicleResponse>(`${ApiEndpoint.vehicle}?Location_name=${locationName}`)
+    } else {
+      vehicleRes = await axios.get<VehicleResponse>(ApiEndpoint.vehicle)
+    }
+
+    props = {
+      vehicles: vehicleRes.data.Items,
+      locations: locationRes.data.Items,
+    }
+  } catch ({ response, message }) {
+    if (response) {
+      console.error('Error getting vehicles and locations', response?.data?.message)
+    } else {
+      console.error(message)
+    }
+  }
 
   return {
-    props: {
-      vehicles: res.data.Items,
-    },
+    props,
   }
 }
