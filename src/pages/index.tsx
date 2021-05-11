@@ -28,7 +28,7 @@ function Register() {
         Email: email,
         Name: name,
         Password: password,
-        admin: false,
+        Admin: "false",
       })
     } catch (e) {
       console.error('Error registering', e)
@@ -114,7 +114,7 @@ export default function Login() {
       })
 
       router.push({
-        pathname: 'dashboard',
+        pathname: 'booking',
       })
     } catch (e) {
       console.error('Error logging in', e)
