@@ -4,6 +4,13 @@ import router from 'next/router';
 import React, { useRef, useState } from 'react'
 import { ApiEndpoint } from '../constant/api'
 
+type bookinghourform = {
+  start_time : string
+  end_time : string
+}
+
+
+
 export default function BookingHourPage() {
   const formItemLayout = {
     labelCol: {
@@ -43,21 +50,27 @@ export default function BookingHourPage() {
     ],
   };
 
+  const [form] = Form.useForm<bookinghourform>()
+
   async function TimeRelatedForm() {
+    await form.validateFields()
     const onFinish = async (fieldsValue: { [x: string]: { format: (arg0: string) => any; }; }) => {
-      const values =
+    const { start_time, end_time } = form.getFieldsValue()
+    const values =
       {
   
         'starttime-picker': fieldsValue['date-time-picker'].format('YYYY-MM-DD HH:mm'),
         'endtime-picker': fieldsValue['date-time-picker'].format('YYYY-MM-DD HH:mm'),
   
-      };
+      }
+
+
       try {
         console.log('sending data', values)
         await axios.post(ApiEndpoint.vehicle, values)
         router.reload()
       } catch ({ message }) {
-        console.log('Received values of form: ', message)
+        console.error('Error booking values', message)
         notification.error({
           message: 'Action failed',
           description: message,
@@ -66,7 +79,7 @@ export default function BookingHourPage() {
     }
   }
   return (
-    <Form name="time_related_controls" {...formItemLayout} onFinish={TimeRelatedForm}>
+    <Form form={form} name="time_related_controls" {...formItemLayout} onFinish={TimeRelatedForm}>
     <h1>Please enter your start time and end time</h1>
     <Form.Item name="starttime-picker" label="Start Time">
       <DatePicker showTime format="YYYY-MM-DD HH:mm" />
