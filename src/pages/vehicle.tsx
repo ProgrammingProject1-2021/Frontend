@@ -9,13 +9,6 @@ import { ApiEndpoint } from '../constant/api'
 import { Vehicle, VehicleResponse } from '../types'
 import Navigation from '../components/navigation'
 
-type VehicleForm = {
-  model: string
-  registration: string
-  currentCustomer: string
-  locationName: string
-}
-
 type VehiclePageProps = {
   vehicles: Vehicle[]
 }
@@ -49,7 +42,7 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
     {
       title: 'operation',
       dataIndex: 'operation',
-      render: (_: any, record: VehicleForm) => {
+      render: (_: any, record: Vehicle) => {
         const editable = isEditing(record)
         return editable ? (
           <span>
@@ -75,7 +68,7 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
   })
   const searchInputEl = useRef(null)
   const [editingRegistration, setEditingRegistration] = useState('')
-  const [form] = Form.useForm<VehicleForm>()
+  const [form] = Form.useForm<Vehicle>()
 
   const mergedColumns = columns.map((col) => {
     if (!col.editable) {
@@ -83,9 +76,8 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
     }
     return {
       ...col,
-      onCell: (record: VehicleForm) => ({
+      onCell: (record: Vehicle) => ({
         record,
-        inputType: col.dataIndex === 'age' ? 'number' : 'text',
         dataIndex: col.dataIndex,
         title: col.title,
         editing: isEditing(record),
@@ -93,11 +85,12 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
     }
   })
 
-  const isEditing = (record: VehicleForm) => record.registration === editingRegistration
+  const isEditing = (record: Vehicle) => record.Registration === editingRegistration
 
-  const edit = (record: Partial<VehicleForm>) => {
+  const edit = (record: Vehicle) => {
+    console.log('record', record)
     form.setFieldsValue(record)
-    setEditingRegistration(record.registration)
+    setEditingRegistration(record.Registration)
   }
 
   // Beginning of search helper functions
@@ -179,12 +172,12 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
   async function handleSubmit() {
     await form.validateFields()
 
-    const { model, registration, currentCustomer, locationName } = form.getFieldsValue()
+    const { Model, Registration, Current_customer, Location_name } = form.getFieldsValue()
     const payload = {
-      Model: model,
-      Registration: registration,
-      Current_customer: currentCustomer,
-      Location_name: locationName,
+      Model,
+      Registration,
+      Current_customer,
+      Location_name,
     }
 
     try {
@@ -242,7 +235,17 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
             </div>
           </div>
         </Form>
-        <Table columns={columns} dataSource={vehicles} rowKey="id" bordered rowClassName="editable-row" />
+        <Table
+          components={{
+            body: {
+              cell: EditableCell,
+            },
+          }}
+          columns={mergedColumns}
+          dataSource={vehicles}
+          rowKey="id"
+          bordered
+        />
       </div>
     </>
   )
@@ -253,7 +256,7 @@ interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
   dataIndex: string
   title: any
   inputType: 'text'
-  record: VehicleForm
+  record: Vehicle
   index: number
   children: React.ReactNode
 }
