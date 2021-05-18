@@ -9,3 +9,18 @@ export type VehicleResponse = {
   Items: Vehicle[]
   Count: number
 }
+
+export type BookingHour =
+{
+  Booking_id: string
+  Registration: string
+  Customer_id: string
+  Start_time: string
+  End_time: string
+}
+
+export type BookingResponse =
+{
+ Items: BookingHour[]
+ Count: number
+}
