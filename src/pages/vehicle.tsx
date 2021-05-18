@@ -89,7 +89,7 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
 
   const edit = (record: Vehicle) => {
     console.log('record', record)
-    form.setFieldsValue(record)
+    form.setFieldsValue({ ...record })
     setEditingRegistration(record.Registration)
   }
 
@@ -234,18 +234,18 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
               </button>
             </div>
           </div>
+          <Table
+            components={{
+              body: {
+                cell: EditableCell,
+              },
+            }}
+            columns={mergedColumns}
+            dataSource={vehicles}
+            rowKey="id"
+            bordered
+          />
         </Form>
-        <Table
-          components={{
-            body: {
-              cell: EditableCell,
-            },
-          }}
-          columns={mergedColumns}
-          dataSource={vehicles}
-          rowKey="id"
-          bordered
-        />
       </div>
     </>
   )
