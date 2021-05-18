@@ -191,6 +191,7 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
       notification.error({
         message: 'Adding new vehicle failed',
         description: message,
+        placement: 'bottomRight',
       })
     }
   }
@@ -216,6 +217,7 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
       notification.error({
         message: 'Adding new vehicle failed',
         description: message,
+        placement: 'bottomRight',
       })
     }
   }

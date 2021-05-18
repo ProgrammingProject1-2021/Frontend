@@ -26,6 +26,7 @@ export default function Returnpage() {
         notification.error({
           message: 'Error',
           description: message,
+          placement: 'bottomRight',
         })
       }
     }

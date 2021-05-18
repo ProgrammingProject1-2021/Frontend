@@ -70,6 +70,7 @@ export default function BookingPage({ locations, vehicles }: BookingPageProps) {
       notification.error({
         message: 'Booking Unsuccessful',
         description: message,
+        placement: 'bottomRight',
       })
     }
   }
