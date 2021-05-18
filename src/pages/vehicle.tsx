@@ -1,12 +1,12 @@
 import { SearchOutlined } from '@ant-design/icons'
-import { Button, Form, Input, notification, Space, Table } from 'antd'
+import { Button, Form, Input, notification, Popconfirm, Space, Table, Typography } from 'antd'
 import axios from 'axios'
 import router from 'next/router'
 import React, { useRef, useState } from 'react'
 // @ts-ignore
 import Highlighter from 'react-highlight-words'
 import { ApiEndpoint } from '../constant/api'
-import { Vehicle, VehicleResponse } from '../types/vehicle'
+import { Vehicle, VehicleResponse } from '../types'
 import Navigation from '../components/navigation'
 
 type VehicleForm = {
@@ -26,21 +26,46 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
       title: 'Model',
       dataIndex: 'Model',
       ...getColumnSearchProps('Model'),
+      editable: true,
     },
     {
       title: 'Registration',
       dataIndex: 'Registration',
       ...getColumnSearchProps('Registration'),
+      editable: false,
     },
     {
       title: 'Current Customer',
       dataIndex: 'Current_customer',
       ...getColumnSearchProps('Current_customer'),
+      editable: true,
     },
     {
       title: 'Location Name',
       dataIndex: 'Location_name',
       ...getColumnSearchProps('Location_name'),
+      editable: true,
+    },
+    {
+      title: 'operation',
+      dataIndex: 'operation',
+      render: (_: any, record: VehicleForm) => {
+        const editable = isEditing(record)
+        return editable ? (
+          <span>
+            <a href="javascript:;" style={{ marginRight: 8 }}>
+              Save
+            </a>
+            <Popconfirm title="Sure to cancel?" onConfirm={() => setEditingRegistration('')}>
+              <a>Cancel</a>
+            </Popconfirm>
+          </span>
+        ) : (
+          <Typography.Link disabled={editingRegistration !== ''} onClick={() => edit(record)}>
+            Edit
+          </Typography.Link>
+        )
+      },
     },
   ]
 
@@ -49,8 +74,33 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
     searchedColumn: '',
   })
   const searchInputEl = useRef(null)
+  const [editingRegistration, setEditingRegistration] = useState('')
   const [form] = Form.useForm<VehicleForm>()
 
+  const mergedColumns = columns.map((col) => {
+    if (!col.editable) {
+      return col
+    }
+    return {
+      ...col,
+      onCell: (record: VehicleForm) => ({
+        record,
+        inputType: col.dataIndex === 'age' ? 'number' : 'text',
+        dataIndex: col.dataIndex,
+        title: col.title,
+        editing: isEditing(record),
+      }),
+    }
+  })
+
+  const isEditing = (record: VehicleForm) => record.registration === editingRegistration
+
+  const edit = (record: Partial<VehicleForm>) => {
+    form.setFieldsValue(record)
+    setEditingRegistration(record.registration)
+  }
+
+  // Beginning of search helper functions
   function getColumnSearchProps(dataIndex) {
     return {
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -124,6 +174,7 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
     clearFilters()
     setSearchState({ ...searchState, searchText: '' })
   }
+  // Ending of search helper functions
 
   async function handleSubmit() {
     await form.validateFields()
@@ -191,9 +242,50 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
             </div>
           </div>
         </Form>
-        <Table columns={columns} dataSource={vehicles} rowKey="id" />
+        <Table columns={columns} dataSource={vehicles} rowKey="id" bordered rowClassName="editable-row" />
       </div>
     </>
+  )
+}
+
+interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
+  editing: boolean
+  dataIndex: string
+  title: any
+  inputType: 'text'
+  record: VehicleForm
+  index: number
+  children: React.ReactNode
+}
+
+const EditableCell: React.FC<EditableCellProps> = ({
+  editing,
+  dataIndex,
+  title,
+  inputType,
+  record,
+  index,
+  children,
+  ...restProps
+}) => {
+  return (
+    <td {...restProps}>
+      {editing ? (
+        <Form.Item
+          name={dataIndex}
+          style={{ margin: 0 }}
+          rules={[
+            {
+              required: true,
+              message: `Please Input ${title}!`,
+            },
+          ]}>
+          <Input />
+        </Form.Item>
+      ) : (
+        children
+      )}
+    </td>
   )
 }
 
