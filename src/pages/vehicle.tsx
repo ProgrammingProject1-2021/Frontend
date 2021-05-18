@@ -184,7 +184,7 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
     try {
       // Send data to backend
       console.log('Send vehicle update request with payload', payload)
-      await axios.post(`${ApiEndpoint.vehicle}/${payload.Registration}`, payload)
+      await axios.patch(`${ApiEndpoint.vehicle}/${payload.Registration}`, payload)
       router.reload()
     } catch ({ message }) {
       console.error('Error sending vehicle info', message)
