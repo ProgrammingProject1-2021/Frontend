@@ -20,3 +20,10 @@ export type LocationsResponse = {
   Items: Location[]
   Count: number
 }
+
+export type LoginResponse = {
+  Admin: string
+  Email: string
+  Name: string
+  Password: string
+}
