@@ -40,15 +40,16 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
       editable: true,
     },
     {
-      title: 'operation',
+      title: 'Operation',
       dataIndex: 'operation',
+      editable: false,
       render: (_: any, record: Vehicle) => {
         const editable = isEditing(record)
         return editable ? (
           <span>
-            <a href="javascript:;" style={{ marginRight: 8 }}>
+            <Typography.Link onClick={() => handleEdit(record.Registration)} style={{ marginRight: 8 }}>
               Save
-            </a>
+            </Typography.Link>
             <Popconfirm title="Sure to cancel?" onConfirm={() => setEditingRegistration('')}>
               <a>Cancel</a>
             </Popconfirm>
@@ -88,7 +89,7 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
   const isEditing = (record: Vehicle) => record.Registration === editingRegistration
 
   const edit = (record: Vehicle) => {
-    console.log('record', record)
+    console.log('editing record', record)
     form.setFieldsValue({ ...record })
     setEditingRegistration(record.Registration)
   }
@@ -168,6 +169,31 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
     setSearchState({ ...searchState, searchText: '' })
   }
   // Ending of search helper functions
+
+  async function handleEdit(registration: string) {
+    await form.validateFields()
+
+    const { Model, Current_customer, Location_name } = form.getFieldsValue()
+    const payload = {
+      Model,
+      Registration: registration,
+      Current_customer,
+      Location_name,
+    }
+
+    try {
+      // Send data to backend
+      console.log('Send vehicle update request with payload', payload)
+      await axios.post(`${ApiEndpoint.vehicle}/${payload.Registration}`, payload)
+      router.reload()
+    } catch ({ message }) {
+      console.error('Error sending vehicle info', message)
+      notification.error({
+        message: 'Adding new vehicle failed',
+        description: message,
+      })
+    }
+  }
 
   async function handleSubmit() {
     await form.validateFields()
