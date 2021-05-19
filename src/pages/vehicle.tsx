@@ -6,7 +6,7 @@ import React, { useRef, useState } from 'react'
 // @ts-ignore
 import Highlighter from 'react-highlight-words'
 import { ApiEndpoint } from '../constant/api'
-import { Vehicle, VehicleResponse } from '../types/vehicle'
+import { Vehicle, VehicleResponse } from '../types/index'
 import Navigation from '../components/navigation'
 
 type VehicleForm = {
