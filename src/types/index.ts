@@ -1,3 +1,9 @@
+export type Location = {
+  Name: string
+  Location_latitude: number
+  Location_longitude: number
+}
+
 export type Vehicle = {
   Model: string
   Registration: string
@@ -7,6 +13,11 @@ export type Vehicle = {
 
 export type VehicleResponse = {
   Items: Vehicle[]
+  Count: number
+}
+
+export type LocationsResponse = {
+  Items: Location[]
   Count: number
 }
 

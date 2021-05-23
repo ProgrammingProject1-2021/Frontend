@@ -6,7 +6,8 @@ import React, { useRef, useState } from 'react'
 // @ts-ignore
 import Highlighter from 'react-highlight-words'
 import { ApiEndpoint } from '../constant/api'
-import { Vehicle, VehicleResponse } from '../types/vehicle'
+import { Vehicle, VehicleResponse } from '../types/index'
+import Navigation from '../components/navigation'
 
 type VehicleForm = {
   model: string
@@ -150,44 +151,49 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
   }
 
   return (
-    <div className="container pt-4 pb-3">
-      <Form form={form} onFinish={handleSubmit}>
-        <div className="form-group">
-          <div className="row">
-            <div className="col-lg-4">
-              <label htmlFor="model">Car Model</label>
-              <Form.Item name="model">
-                <Input id="model" placeholder="Car Model" className="form-control" required />
-              </Form.Item>
+    <>
+      <Navigation />
+      <div style={{ marginTop: '5%' }} />
+
+      <div className="container">
+        <Form form={form} onFinish={handleSubmit}>
+          <div className="form-group">
+            <div className="row">
+              <div className="col-lg-4">
+                <label htmlFor="model">Car Model</label>
+                <Form.Item name="model">
+                  <Input id="model" placeholder="Car Model" className="form-control" required />
+                </Form.Item>
+              </div>
+              <div className="col-lg-4">
+                <label htmlFor="registration">Registration</label>
+                <Form.Item name="registration">
+                  <Input id="registration" placeholder="Registration" className="form-control" required />
+                </Form.Item>
+              </div>
+              <div className="col-lg-4">
+                <label htmlFor="currentCustomer">Customer Name</label>
+                <Form.Item name="currentCustomer">
+                  <Input id="currentCustomer" placeholder="customerName" className="form-control" required />
+                </Form.Item>
+              </div>
+              <div className="col-lg-4">
+                <label htmlFor="locationName">Location Name</label>
+                <Form.Item name="locationName">
+                  <Input id="locationName" placeholder="locationName" className="form-control" required />
+                </Form.Item>
+              </div>
             </div>
-            <div className="col-lg-4">
-              <label htmlFor="registration">Registration</label>
-              <Form.Item name="registration">
-                <Input id="registration" placeholder="Registration" className="form-control" required />
-              </Form.Item>
-            </div>
-            <div className="col-lg-4">
-              <label htmlFor="currentCustomer">Customer Name</label>
-              <Form.Item name="currentCustomer">
-                <Input id="currentCustomer" placeholder="customerName" className="form-control" required />
-              </Form.Item>
-            </div>
-            <div className="col-lg-4">
-              <label htmlFor="locationName">Location Name</label>
-              <Form.Item name="locationName">
-                <Input id="locationName" placeholder="locationName" className="form-control" required />
-              </Form.Item>
+            <div className="text-right pt-2">
+              <button type="submit" className="btn btn-primary btn-w200 m-1">
+                Add new vehicle
+              </button>
             </div>
           </div>
-          <div className="text-right pt-2">
-            <button type="submit" className="btn btn-primary btn-w200 m-1">
-              Add new vehicle
-            </button>
-          </div>
-        </div>
-      </Form>
-      <Table columns={columns} dataSource={vehicles} rowKey="id" />
-    </div>
+        </Form>
+        <Table columns={columns} dataSource={vehicles} rowKey="id" />
+      </div>
+    </>
   )
 }
 
