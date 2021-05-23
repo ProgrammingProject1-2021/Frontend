@@ -9,7 +9,8 @@ import MapView from '../components/map'
 import Navigation from '../components/navigation'
 import { ApiEndpoint } from '../constant/api'
 import { Location, LocationsResponse, Vehicle, VehicleResponse } from '../types'
-import { useHistory } from "react-router-dom"
+import history from '../constant/history'
+
 
 
 
@@ -54,7 +55,7 @@ export default function BookingPage({ locations, vehicles }: BookingPageProps) {
 
   async function handleBooking(vehicle: Vehicle) {
     // click book button to bookinghourpage
-    this.props.history.push("/bookinghourpage ")
+   // this.props.history.push("/bookinghourpage")
     console.log('Booking vehicle', vehicle)
     // TODO: change carId to selected car
     const carId = ''
@@ -70,6 +71,7 @@ export default function BookingPage({ locations, vehicles }: BookingPageProps) {
         router.reload()
       }, 2000)
     } catch ({ message }) {
+      this.props.history.push("/bookinghourpage")
       console.error('Error sending booking request', message)
       notification.error({
         message: 'Booking Unsuccessful',

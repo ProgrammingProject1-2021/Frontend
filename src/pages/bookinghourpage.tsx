@@ -6,6 +6,7 @@ import React, { useRef, useState } from 'react'
 import { ApiEndpoint } from '../constant/api'
 import { BookingHour, BookingResponse } from '../types/index'
 import Highlighter from 'react-highlight-words'
+import Navigation from '../components/navigation'
 
 type bookinghourform = {
   booking_id: string
@@ -98,8 +99,11 @@ export default function BookingHourPage({bookinghour}: BookingPageProps) {
     //}
   }
   return (
+    <>
+    <Navigation />
+    <div style={{ marginTop: '5%' }} />
+    
     <div className="container pt-4 pb-3">
-      <h1>Please enter a start time and end time</h1>
       <Form form={form} onFinish={TimeRelatedForm}>
         <div className="form-group">
           <div className="row">
@@ -138,6 +142,7 @@ export default function BookingHourPage({bookinghour}: BookingPageProps) {
         </div>
       </Form>
     </div>
+    </>
   )
 }
 
