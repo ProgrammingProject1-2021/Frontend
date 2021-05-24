@@ -113,7 +113,7 @@ export default function BookingHourPage({bookinghour}: BookingPageProps) {
               selected={startDate} 
               onChange={date => setStartDate(date)} 
               timeInputLabel="Time:"
-              dateFormat="dd/MM/yyyy hh:mm"
+              dateFormat="dd/MM/yyyy HH:mm"
               showTimeInput
               minDate={new Date()} />
               </Form.Item>
@@ -125,7 +125,7 @@ export default function BookingHourPage({bookinghour}: BookingPageProps) {
                selected={endDate} 
                onChange={date => setEndDate(date)} 
                timeInputLabel="Time:"
-                dateFormat="dd/MM/yyyy hh:mm"
+                dateFormat="dd/MM/yyyy HH:mm"
                 showTimeInput
                minDate={new Date()} />
               </Form.Item>
