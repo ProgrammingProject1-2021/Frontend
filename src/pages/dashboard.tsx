@@ -1,148 +1,158 @@
 import { SearchOutlined } from '@ant-design/icons'
-import { Button, DatePicker, Form, Input, notification, Space, Table } from 'antd'
+import { Button, Form, Input, notification, Space, Table } from 'antd'
 import axios from 'axios'
-import router from 'next/router'
 import React, { useRef, useState } from 'react'
 import Highlighter from 'react-highlight-words'
 import { ApiEndpoint } from '../constant/api'
-import { BookingHour, BookingResponse } from '../types/index'
+import { BookingHistory, DashboardResponse } from '../types/index'
 import Navigation from '../components/navigation'
 
-type bookinghourform = {
+type dashboardform = {
   booking_id: string
   registration : string
-  customer_id : string
   start_time : string
   end_time : string
+  cost: string
 }
 
-type BookingPageProps = {
-  bookinghour: BookingHour[]
+type dashboardProps = {
+  dashboard: BookingHistory[]
 }
 
-export default function BookingHourPage({bookinghour}: BookingPageProps) {
-
+export default function dashboardPage({ dashboard }: dashboardProps) {
+  const columns = [
+    {
+      title: 'Booking ID',
+      dataIndex: 'Booking_id',
+      ...getColumnSearchProps('Booking_id'),
+    },
+    {
+      title: 'Registration',
+      dataIndex: 'Registration',
+      ...getColumnSearchProps('Registration'),
+    },
+    {
+      title: 'Start Time',
+      dataIndex: 'Start_time',
+      ...getColumnSearchProps('Start_time'),
+    },
+    {
+      title: 'End Time',
+      dataIndex: 'End_time',
+      ...getColumnSearchProps('End_time'),
+    },
+    {
+      title: 'Total Cost',
+      dataIndex: 'Cost',
+      ...getColumnSearchProps('Cost'),
+    },
+  ]
 
   const [searchState, setSearchState] = useState({
     searchText: '',
     searchedColumn: '',
   })
   const searchInputEl = useRef(null)
-  const [form] = Form.useForm<bookinghourform>()
+  const [form] = Form.useForm<dashboardform>()
 
+  function getColumnSearchProps(dataIndex) {
+    return {
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => 
+      (
+        <div style={{ padding: 8 }}>
+          <Input
+            ref={searchInputEl}
+            placeholder={`Search ${dataIndex}`}
+            value={selectedKeys[0]}
+            onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+            onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            style={{ width: 188, marginBottom: 8, display: 'block' }}
+          />
 
-  const formItemLayout = {
-    labelCol: {
-      xs: {
-        span: 24,
-      },
-      sm: {
-        span: 8,
-      },
-    },
-    wrapperCol: {
-      xs: {
-        span: 24,
-      },
-      sm: {
-        span: 16,
-      },
-    },
-  };
-  
-  const config = {
-    rules: [
-      {
-        type: 'object',
-        required: true,
-        message: 'Please select time!',
-      },
-    ],
-  };
-  const rangeConfig = {
-    rules: [
-      {
-        type: 'array',
-        required: true,
-        message: 'Please select time!',
-      },
-    ],
-  };
+          <Space>
+            <Button
+              type="primary"
+              onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+              icon={<SearchOutlined />}
+              size="small"
+              style={{ width: 90 }}>
+              Search
+            </Button>
+            <Button onClick={() => handleReset(clearFilters)} size="small" style={{ width: 90 }}>
+              Reset
+            </Button>
+            <Button
+              type="link"
+              size="small"
+              onClick={() => {
+                confirm({ closeDropdown: false })
+                setSearchState({
+                  searchText: selectedKeys[0],
+                  searchedColumn: dataIndex,
+                })
+              }}>
+              Filter
+            </Button>
+          </Space>
+        </div>
+      ),
 
-
-
-  async function TimeRelatedForm() {
-    await form.validateFields()
-    const { booking_id, registration, customer_id, start_time, end_time } = form.getFieldsValue()
-    const values =
-      {
-        Booking_id : booking_id,
-        Registration : registration,
-        Customer_id : customer_id,
-        Start_time : start_time,
-        End_time: end_time,
-      }
-
-      try 
-      {
-        console.log('sending data', values)
-        await axios.post(ApiEndpoint.booking, values)
-        router.reload()
-      } catch ({ message }) 
-      {
-        console.error('Error booking values', message)
-        notification.error({
-          message: 'Action failed',
-          description: message,
-        })
-      }
-    //}
+      filterIcon: (filtered: boolean) => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+      onFilter: (value: string, record) =>
+        record[dataIndex] ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()) : '',
+      onFilterDropdownVisibleChange: (visible: boolean) => {
+        if (visible) {
+          setTimeout(() => searchInputEl.current.select(), 100)
+        }
+      },
+      render: (text: string) =>
+        searchState.searchedColumn === dataIndex ? (
+          <Highlighter
+            highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+            searchWords={[searchState.searchText]}
+            autoEscape
+            textToHighlight={text ? text.toString() : ''}
+          />
+        ) : (
+          text
+        ),
+    }
   }
+
+  function handleSearch(selectedKeys, confirm, dataIndex) 
+  {
+    confirm()
+    setSearchState({
+      searchText: selectedKeys[0],
+      searchedColumn: dataIndex,
+    })
+  }
+
+  function handleReset(clearFilters) 
+  {
+    clearFilters()
+    setSearchState({ ...searchState, searchText: '' })
+  }
+
   return (
     <>
-    <Navigation />
-    <div style={{ marginTop: '5%' }} />
-    
-    <div className="container pt-4 pb-3">
-      <Form form={form} onFinish={TimeRelatedForm}>
-        <div className="form-group">
-          <div className="row">
-            <div className="col-lg-4">
-              <label htmlFor="booking_id">Booking ID:</label>
-              <Form.Item name="booking_id">
-                <Input id="booking_id" placeholder="Booking_ID" className="form-control" required />
-              </Form.Item>
-            </div>
-            <div className="col-lg-4">
-              <label htmlFor="registration">Registration:</label>
-              <Form.Item name="registration">
-                <Input id="registration" placeholder="Registration" className="form-control" required />
-              </Form.Item>
-            </div>
-            <div className="col-lg-4">
-              <label htmlFor="customer_id">Customer ID:</label>
-              <Form.Item name="customer_id">
-                <Input id="customer_id" placeholder="Customer_ID" className="form-control" required />
-              </Form.Item>
-            </div>
-            <div className="col-lg-4">
-              <Form.Item name="Start_time" label="Start Time">
-              <DatePicker showTime format="YYYY-MM-DD HH:mm" />
-              </Form.Item>
-            </div>
-            <div className="col-lg-4">
-              <Form.Item name="End_time" label="End Time">
-              <DatePicker showTime format="YYYY-MM-DD HH:mm" />
-              </Form.Item>
-            </div>
-          </div>
-          <div className="text-right pt-2">
-            <button type="submit" className="btn btn-primary btn-w200 m-1">Book</button>
-          </div>
-        </div>
-      </Form>
-    </div>
+      <Navigation />
+      <div style={{ marginTop: '5%' }} />
+      <div className="container">
+        <Table columns={columns} dataSource={dashboard} rowKey="id" />
+      </div>
     </>
   )
 }
 
+export async function getServerSideProps(context) {
+  const res = await axios.get<DashboardResponse>(ApiEndpoint.booking)
+
+  const dashboardRes = res.data
+
+  return {
+    props: {
+      dashboard: dashboardRes.Items,
+    },
+  }
+}

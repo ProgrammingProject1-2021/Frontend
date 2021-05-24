@@ -1,12 +1,12 @@
-import { Form, DatePicker, TimePicker, Button, notification, Space, Table, Input } from 'antd'
-import { SearchOutlined } from '@ant-design/icons'
+import { Form, notification, Input } from 'antd'
 import axios from 'axios';
 import router from 'next/router';
 import React, { useRef, useState } from 'react'
 import { ApiEndpoint } from '../constant/api'
-import { BookingHour, BookingResponse } from '../types/index'
-import Highlighter from 'react-highlight-words'
+import { BookingHour } from '../types/index'
 import Navigation from '../components/navigation'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
 
 type bookinghourform = {
   booking_id: string
@@ -23,14 +23,15 @@ type BookingPageProps = {
 export default function BookingHourPage({bookinghour}: BookingPageProps) {
 
 
-  const [searchState, setSearchState] = useState({
+  const [searchState] = useState({
     searchText: '',
     searchedColumn: '',
   })
   const searchInputEl = useRef(null)
   const [form] = Form.useForm<bookinghourform>()
 
-
+  const [startDate, setStartDate]=useState(null)
+  const [endDate, setEndDate]=useState(null)
   const formItemLayout = {
     labelCol: {
       xs: {
@@ -50,26 +51,6 @@ export default function BookingHourPage({bookinghour}: BookingPageProps) {
     },
   };
   
-  const config = {
-    rules: [
-      {
-        type: 'object',
-        required: true,
-        message: 'Please select time!',
-      },
-    ],
-  };
-  const rangeConfig = {
-    rules: [
-      {
-        type: 'array',
-        required: true,
-        message: 'Please select time!',
-      },
-    ],
-  };
-
-
 
   async function TimeRelatedForm() {
     await form.validateFields()
@@ -126,13 +107,27 @@ export default function BookingHourPage({bookinghour}: BookingPageProps) {
               </Form.Item>
             </div>
             <div className="col-lg-4">
-              <Form.Item name="Start_time" label="Start Time">
-              <DatePicker showTime format="YYYY-MM-DD HH:mm" />
+              <Form.Item name="start_time" label="Start Time">
+              <DatePicker 
+              className="form-control"
+              selected={startDate} 
+              onChange={date => setStartDate(date)} 
+              timeInputLabel="Time:"
+              dateFormat="dd/MM/yyyy hh:mm"
+              showTimeInput
+              minDate={new Date()} />
               </Form.Item>
             </div>
             <div className="col-lg-4">
-              <Form.Item name="End_time" label="End Time">
-              <DatePicker showTime format="YYYY-MM-DD HH:mm" />
+              <Form.Item name="end_time" label="End Time">
+              <DatePicker 
+                className="form-control"
+               selected={endDate} 
+               onChange={date => setEndDate(date)} 
+               timeInputLabel="Time:"
+                dateFormat="dd/MM/yyyy hh:mm"
+                showTimeInput
+               minDate={new Date()} />
               </Form.Item>
             </div>
           </div>
@@ -145,4 +140,3 @@ export default function BookingHourPage({bookinghour}: BookingPageProps) {
     </>
   )
 }
-

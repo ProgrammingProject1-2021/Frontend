@@ -35,3 +35,18 @@ export type BookingResponse =
  Items: BookingHour[]
  Count: number
 }
+
+export type BookingHistory =
+{
+  Booking_id: string
+  Registration: string
+  Start_time: string
+  End_time: string
+  Cost: string
+}
+
+export type DashboardResponse =
+{
+ Items: BookingHistory[]
+ Count: number
+}
