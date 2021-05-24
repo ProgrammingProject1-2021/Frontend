@@ -35,7 +35,7 @@ export default function BookingPage({ locations, vehicles }: BookingPageProps) {
     {
       title: 'Action',
       render: (row: Vehicle) => (
-        <Button type="primary" onClick={() => handleBooking(row)} style={{ width: 90 }}>
+        <Button type="primary" href = "/bookinghourpage" onClick={() => handleBooking(row)} style={{ width: 90 }}>
           Book
         </Button>
       ),
