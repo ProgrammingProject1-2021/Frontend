@@ -1,7 +1,7 @@
 import { Form, notification, Input } from 'antd'
 import axios from 'axios'
 import router from 'next/router'
-import React, { useRef, useState } from 'react'
+import React, { useState } from 'react'
 import { ApiEndpoint } from '../constant/api'
 import { BookingHour } from '../types/index'
 import Navigation from '../components/navigation'
@@ -21,33 +21,10 @@ type BookingPageProps = {
 }
 
 export default function BookingHourPage({ bookinghour }: BookingPageProps) {
-  const [searchState] = useState({
-    searchText: '',
-    searchedColumn: '',
-  })
-  const searchInputEl = useRef(null)
   const [form] = Form.useForm<BookingHourform>()
 
   const [startDate, setStartDate] = useState(null)
   const [endDate, setEndDate] = useState(null)
-  const formItemLayout = {
-    labelCol: {
-      xs: {
-        span: 24,
-      },
-      sm: {
-        span: 8,
-      },
-    },
-    wrapperCol: {
-      xs: {
-        span: 24,
-      },
-      sm: {
-        span: 16,
-      },
-    },
-  }
 
   async function TimeRelatedForm() {
     await form.validateFields()
