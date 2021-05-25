@@ -9,11 +9,11 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 
 type bookinghourform = {
-  booking_id: string
+  bookingId: string
   registration: string
-  customer_id: string
-  start_time: string
-  end_time: string
+  customerEmail: string
+  startTime: string
+  endTime: string
 }
 
 type BookingPageProps = {
@@ -51,13 +51,13 @@ export default function BookingHourPage({ bookinghour }: BookingPageProps) {
 
   async function TimeRelatedForm() {
     await form.validateFields()
-    const { booking_id, registration, customer_id, start_time, end_time } = form.getFieldsValue()
+    const { bookingId, registration, customerEmail, startTime, endTime } = form.getFieldsValue()
     const values = {
-      Booking_id: booking_id,
+      Booking_id: bookingId,
       Registration: registration,
-      Customer_id: customer_id,
-      Start_time: start_time,
-      End_time: end_time,
+      CustomerEmail: customerEmail,
+      Start_time: startTime,
+      End_time: endTime,
     }
 
     try {
@@ -83,9 +83,9 @@ export default function BookingHourPage({ bookinghour }: BookingPageProps) {
           <div className="form-group">
             <div className="row">
               <div className="col-lg-4">
-                <label htmlFor="booking_id">Booking ID:</label>
-                <Form.Item name="booking_id">
-                  <Input id="booking_id" placeholder="Booking_ID" className="form-control" required />
+                <label htmlFor="bookingId">Booking ID:</label>
+                <Form.Item name="bookingId">
+                  <Input id="bookingId" placeholder="Booking ID" className="form-control" required />
                 </Form.Item>
               </div>
               <div className="col-lg-4">
@@ -95,13 +95,13 @@ export default function BookingHourPage({ bookinghour }: BookingPageProps) {
                 </Form.Item>
               </div>
               <div className="col-lg-4">
-                <label htmlFor="customer_id">Customer ID:</label>
-                <Form.Item name="customer_id">
-                  <Input id="customer_id" placeholder="Customer_ID" className="form-control" required />
+                <label htmlFor="customerId">Customer Email:</label>
+                <Form.Item name="customerId">
+                  <Input id="customerId" placeholder="Customer Email" className="form-control" required />
                 </Form.Item>
               </div>
               <div className="col-lg-4">
-                <Form.Item name="start_time" label="Start Time">
+                <Form.Item name="startTime" label="Start Time">
                   <DatePicker
                     className="form-control"
                     selected={startDate}
@@ -114,7 +114,7 @@ export default function BookingHourPage({ bookinghour }: BookingPageProps) {
                 </Form.Item>
               </div>
               <div className="col-lg-4">
-                <Form.Item name="end_time" label="End Time">
+                <Form.Item name="endTime" label="End Time">
                   <DatePicker
                     className="form-control"
                     selected={endDate}
