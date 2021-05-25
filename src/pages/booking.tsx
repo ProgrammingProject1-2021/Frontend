@@ -52,7 +52,11 @@ export default function BookingPage({ locations, vehicles }: BookingPageProps) {
   async function handleBooking(vehicle: Vehicle) {
     console.log('Booking vehicle', vehicle)
 
-    router.push('/bookinghourpage?registration=' + vehicle.Registration)
+    const model = encodeURIComponent(vehicle.Model)
+    const registration = encodeURIComponent(vehicle.Registration)
+    const locationName = encodeURIComponent(vehicle.Location_name)
+
+    router.push(`/bookinghourpage?model=${model}&registration=${registration}&location_name=${locationName}`)
   }
 
   // Begin functions used for table searching
