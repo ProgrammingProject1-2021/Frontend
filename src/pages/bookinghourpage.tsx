@@ -8,7 +8,7 @@ import Navigation from '../components/navigation'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 
-type bookinghourform = {
+type BookingHourform = {
   bookingId: string
   registration: string
   customerEmail: string
@@ -26,7 +26,7 @@ export default function BookingHourPage({ bookinghour }: BookingPageProps) {
     searchedColumn: '',
   })
   const searchInputEl = useRef(null)
-  const [form] = Form.useForm<bookinghourform>()
+  const [form] = Form.useForm<BookingHourform>()
 
   const [startDate, setStartDate] = useState(null)
   const [endDate, setEndDate] = useState(null)
