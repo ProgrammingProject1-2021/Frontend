@@ -1,6 +1,6 @@
 import { SearchOutlined } from '@ant-design/icons'
-import { Button, Input, notification, Space, Table } from 'antd'
-import axios, { AxiosResponse } from 'axios'
+import { Button, Input, Space, Table } from 'antd'
+import axios from 'axios'
 import { GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router'
 import React, { useRef, useState } from 'react'
@@ -152,17 +152,19 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 
   try {
     const locationRes = await axios.get<LocationsResponse>(ApiEndpoint.parkingLocations)
-    let vehicleRes: AxiosResponse<VehicleResponse>
+    let vehicles: Vehicle[]
     // Get query parameter from url (?location_name=)
     const locationName = ctx.query?.location_name
     if (locationName) {
-      vehicleRes = await axios.get<VehicleResponse>(`${ApiEndpoint.vehicle}?Location_name=${locationName}`)
+      const vehicleRes = await axios.get<VehicleResponse>(`${ApiEndpoint.vehicle}?Location_name=${locationName}`)
+      vehicles = vehicleRes.data.Items
     } else {
-      vehicleRes = await axios.get<VehicleResponse>(ApiEndpoint.vehicle)
+      const response = await axios.get<VehicleResponse>(ApiEndpoint.vehicle)
+      vehicles = response.data.Items.filter((vehicle) => vehicle.Current_customer === '')
     }
 
     props = {
-      vehicles: vehicleRes.data.Items,
+      vehicles,
       locations: locationRes.data.Items,
     }
   } catch ({ response, message }) {
