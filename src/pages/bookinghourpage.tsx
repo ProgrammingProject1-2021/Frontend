@@ -21,9 +21,10 @@ type BookingHourform = {
 
 type BookingHourPageProps = {
   bookingId: string
+  registration: string
 }
 
-export default function BookingHourPage({ bookingId }: BookingHourPageProps) {
+export default function BookingHourPage(props: BookingHourPageProps) {
   const [form] = Form.useForm<BookingHourform>()
 
   const [startDate, setStartDate] = useState(null)
@@ -31,7 +32,7 @@ export default function BookingHourPage({ bookingId }: BookingHourPageProps) {
 
   async function onFormSubmit() {
     await form.validateFields()
-    const { registration, customerEmail, startTime, endTime } = form.getFieldsValue()
+    const { bookingId, registration, customerEmail, startTime, endTime } = form.getFieldsValue()
     const values = {
       Booking_id: bookingId,
       Registration: registration,
@@ -47,7 +48,7 @@ export default function BookingHourPage({ bookingId }: BookingHourPageProps) {
     } catch ({ message }) {
       console.error('Error booking values', message)
       notification.error({
-        message: 'Action failed',
+        message: 'Booking Failed',
         description: message,
       })
     }
@@ -64,13 +65,13 @@ export default function BookingHourPage({ bookingId }: BookingHourPageProps) {
               <div className="col-lg-4">
                 <label htmlFor="bookingId">Booking ID:</label>
                 <Form.Item name="bookingId">
-                  <Input id="bookingId" placeholder={bookingId} className="form-control" disabled />
+                  <Input id="bookingId" placeholder={props.bookingId} className="form-control" disabled />
                 </Form.Item>
               </div>
               <div className="col-lg-4">
                 <label htmlFor="registration">Registration:</label>
                 <Form.Item name="registration">
-                  <Input id="registration" placeholder="Registration" className="form-control" required />
+                  <Input id="registration" placeholder={props.registration} className="form-control" disabled />
                 </Form.Item>
               </div>
               <div className="col-lg-4">
@@ -119,9 +120,12 @@ export default function BookingHourPage({ bookingId }: BookingHourPageProps) {
 }
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
+  const registration = ctx.query?.registration
+
   return {
     props: {
       bookingId: uuid(),
+      registration,
     },
   }
 }

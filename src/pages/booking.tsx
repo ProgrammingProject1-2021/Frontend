@@ -35,7 +35,7 @@ export default function BookingPage({ locations, vehicles }: BookingPageProps) {
     {
       title: 'Action',
       render: (row: Vehicle) => (
-        <Button type="primary" href = "/bookinghourpage" onClick={() => handleBooking(row)} style={{ width: 90 }}>
+        <Button type="primary" onClick={() => handleBooking(row)} style={{ width: 90 }}>
           Book
         </Button>
       ),
@@ -52,26 +52,7 @@ export default function BookingPage({ locations, vehicles }: BookingPageProps) {
   async function handleBooking(vehicle: Vehicle) {
     console.log('Booking vehicle', vehicle)
 
-    // TODO: change carId to selected car
-    const carId = ''
-    try {
-      const { data: responseData } = await axios.put(ApiEndpoint.vehicle + carId, { customerName: 'North' })
-      console.log('Booking response', responseData)
-      notification.success({
-        message: 'Booking Successful',
-      })
-
-      // Wait 2 seconds before reloading the page
-      setTimeout(() => {
-        router.reload()
-      }, 2000)
-    } catch ({ message }) {
-      console.error('Error sending booking request', message)
-      notification.error({
-        message: 'Booking Unsuccessful',
-        description: message,
-      })
-    }
+    router.push('/bookinghourpage?registration=' + vehicle.Registration)
   }
 
   // Begin functions used for table searching
