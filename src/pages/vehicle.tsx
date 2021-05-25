@@ -1,20 +1,13 @@
 import { SearchOutlined } from '@ant-design/icons'
-import { Button, Form, Input, notification, Space, Table } from 'antd'
+import { Button, Form, Input, notification, Popconfirm, Space, Table, Typography } from 'antd'
 import axios from 'axios'
 import router from 'next/router'
 import React, { useRef, useState } from 'react'
 // @ts-ignore
 import Highlighter from 'react-highlight-words'
 import { ApiEndpoint } from '../constant/api'
-import { Vehicle, VehicleResponse } from '../types/index'
+import { Vehicle, VehicleResponse } from '../types'
 import Navigation from '../components/navigation'
-
-type VehicleForm = {
-  model: string
-  registration: string
-  currentCustomer: string
-  locationName: string
-}
 
 type VehiclePageProps = {
   vehicles: Vehicle[]
@@ -26,21 +19,47 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
       title: 'Model',
       dataIndex: 'Model',
       ...getColumnSearchProps('Model'),
+      editable: true,
     },
     {
       title: 'Registration',
       dataIndex: 'Registration',
       ...getColumnSearchProps('Registration'),
+      editable: false,
     },
     {
       title: 'Current Customer',
       dataIndex: 'Current_customer',
       ...getColumnSearchProps('Current_customer'),
+      editable: true,
     },
     {
       title: 'Location Name',
       dataIndex: 'Location_name',
       ...getColumnSearchProps('Location_name'),
+      editable: true,
+    },
+    {
+      title: 'Operation',
+      dataIndex: 'operation',
+      editable: false,
+      render: (_: any, record: Vehicle) => {
+        const editable = isEditing(record)
+        return editable ? (
+          <span>
+            <Typography.Link onClick={() => handleEdit(record.Registration)} style={{ marginRight: 8 }}>
+              Save
+            </Typography.Link>
+            <Popconfirm title="Sure to cancel?" onConfirm={() => setEditingRegistration('')}>
+              <a>Cancel</a>
+            </Popconfirm>
+          </span>
+        ) : (
+          <Typography.Link disabled={editingRegistration !== ''} onClick={() => edit(record)}>
+            Edit
+          </Typography.Link>
+        )
+      },
     },
   ]
 
@@ -49,8 +68,33 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
     searchedColumn: '',
   })
   const searchInputEl = useRef(null)
-  const [form] = Form.useForm<VehicleForm>()
+  const [editingRegistration, setEditingRegistration] = useState('')
+  const [form] = Form.useForm<Vehicle>()
 
+  const mergedColumns = columns.map((col) => {
+    if (!col.editable) {
+      return col
+    }
+    return {
+      ...col,
+      onCell: (record: Vehicle) => ({
+        record,
+        dataIndex: col.dataIndex,
+        title: col.title,
+        editing: isEditing(record),
+      }),
+    }
+  })
+
+  const isEditing = (record: Vehicle) => record.Registration === editingRegistration
+
+  const edit = (record: Vehicle) => {
+    console.log('editing record', record)
+    form.setFieldsValue({ ...record })
+    setEditingRegistration(record.Registration)
+  }
+
+  // Beginning of search helper functions
   function getColumnSearchProps(dataIndex) {
     return {
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -124,16 +168,43 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
     clearFilters()
     setSearchState({ ...searchState, searchText: '' })
   }
+  // Ending of search helper functions
+
+  async function handleEdit(registration: string) {
+    await form.validateFields()
+
+    const { Model, Current_customer, Location_name } = form.getFieldsValue()
+    const payload = {
+      Model,
+      Registration: registration,
+      Current_customer,
+      Location_name,
+    }
+
+    try {
+      // Send data to backend
+      console.log('Send vehicle update request with payload', payload)
+      await axios.patch(`${ApiEndpoint.vehicle}/${payload.Registration}`, payload)
+      router.reload()
+    } catch ({ message }) {
+      console.error('Error sending vehicle info', message)
+      notification.error({
+        message: 'Adding new vehicle failed',
+        description: message,
+        placement: 'bottomRight',
+      })
+    }
+  }
 
   async function handleSubmit() {
     await form.validateFields()
 
-    const { model, registration, currentCustomer, locationName } = form.getFieldsValue()
+    const { Model, Registration, Current_customer, Location_name } = form.getFieldsValue()
     const payload = {
-      Model: model,
-      Registration: registration,
-      Current_customer: currentCustomer,
-      Location_name: locationName,
+      Model,
+      Registration,
+      Current_customer,
+      Location_name,
     }
 
     try {
@@ -146,6 +217,7 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
       notification.error({
         message: 'Adding new vehicle failed',
         description: message,
+        placement: 'bottomRight',
       })
     }
   }
@@ -190,10 +262,61 @@ export default function VehiclePage({ vehicles }: VehiclePageProps) {
               </button>
             </div>
           </div>
+          <Table
+            components={{
+              body: {
+                cell: EditableCell,
+              },
+            }}
+            columns={mergedColumns}
+            dataSource={vehicles}
+            rowKey="id"
+            bordered
+          />
         </Form>
-        <Table columns={columns} dataSource={vehicles} rowKey="id" />
       </div>
     </>
+  )
+}
+
+interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
+  editing: boolean
+  dataIndex: string
+  title: any
+  inputType: 'text'
+  record: Vehicle
+  index: number
+  children: React.ReactNode
+}
+
+const EditableCell: React.FC<EditableCellProps> = ({
+  editing,
+  dataIndex,
+  title,
+  inputType,
+  record,
+  index,
+  children,
+  ...restProps
+}) => {
+  return (
+    <td {...restProps}>
+      {editing ? (
+        <Form.Item
+          name={dataIndex}
+          style={{ margin: 0 }}
+          rules={[
+            {
+              required: true,
+              message: `Please Input ${title}!`,
+            },
+          ]}>
+          <Input />
+        </Form.Item>
+      ) : (
+        children
+      )}
+    </td>
   )
 }
 

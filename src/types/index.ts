@@ -21,8 +21,7 @@ export type LocationsResponse = {
   Count: number
 }
 
-export type BookingHour =
-{
+export type BookingHour = {
   Booking_id: string
   Registration: string
   Customer_id: string
@@ -30,14 +29,12 @@ export type BookingHour =
   End_time: string
 }
 
-export type BookingResponse =
-{
- Items: BookingHour[]
- Count: number
+export type BookingResponse = {
+  Items: BookingHour[]
+  Count: number
 }
 
-export type BookingHistory =
-{
+export type BookingHistory = {
   Booking_id: string
   Registration: string
   Start_time: string
@@ -45,8 +42,13 @@ export type BookingHistory =
   Cost: string
 }
 
-export type DashboardResponse =
-{
- Items: BookingHistory[]
- Count: number
+export type DashboardResponse = {
+  Items: BookingHistory[]
+  Count: number
+}
+export type LoginResponse = {
+  Admin: string
+  Email: string
+  Name: string
+  Password: string
 }

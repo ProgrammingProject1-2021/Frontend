@@ -1,3 +1,4 @@
 export enum StorageKey {
-  EMAIL = 'EMAIL',
+  EMAIL = 'email',
+  ADMIN = 'admin',
 }
