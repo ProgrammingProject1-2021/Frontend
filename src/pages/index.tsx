@@ -5,6 +5,7 @@ import { useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { ApiEndpoint } from '../constant/api'
 import { StorageKey } from '../constant/storage'
+import { LoginResponse } from '../types'
 
 interface IRegistrationInputs {
   email: string
@@ -101,7 +102,6 @@ function Register() {
     </div>
   )
 }
-
 interface ILoginInputs {
   email: string
   password: string
@@ -116,11 +116,14 @@ export default function Login() {
     const { email, password } = data
 
     try {
-      await axios.post(ApiEndpoint.login, {
+      const { data: responseData } = await axios.post<LoginResponse>(ApiEndpoint.login, {
         Email: email,
         Password: password,
       })
+      console.log('responseData', responseData)
+
       localStorage.setItem(StorageKey.EMAIL, email)
+      localStorage.setItem(StorageKey.ADMIN, responseData?.Admin)
 
       router.push({
         pathname: 'main',
