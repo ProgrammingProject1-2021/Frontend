@@ -9,13 +9,14 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { uuid } from 'uuidv4'
 import { GetServerSidePropsContext } from 'next'
+import dayjs from 'dayjs'
 
 type BookingHourform = {
   bookingId: string
   registration: string
   customerEmail: string
-  startTime: string
-  endTime: string
+  startTime: Date
+  endTime: Date
 }
 
 type BookingHourPageProps = {
@@ -35,14 +36,14 @@ export default function BookingHourPage({ bookingId }: BookingHourPageProps) {
       Booking_id: bookingId,
       Registration: registration,
       CustomerEmail: customerEmail,
-      Start_time: startTime,
-      End_time: endTime,
+      Start_time: dayjs(startTime).toISOString(),
+      End_time: dayjs(endTime).toISOString(),
     }
 
     try {
       console.log('sending data', values)
-      // await axios.post(ApiEndpoint.booking, values)
-      // router.reload()
+      await axios.post(ApiEndpoint.booking, values)
+      router.reload()
     } catch ({ message }) {
       console.error('Error booking values', message)
       notification.error({
