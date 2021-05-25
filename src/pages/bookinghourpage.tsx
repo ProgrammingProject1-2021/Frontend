@@ -7,6 +7,8 @@ import { BookingHour } from '../types/index'
 import Navigation from '../components/navigation'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
+import { uuid } from 'uuidv4'
+import { GetServerSidePropsContext } from 'next'
 
 type BookingHourform = {
   bookingId: string
@@ -16,19 +18,19 @@ type BookingHourform = {
   endTime: string
 }
 
-type BookingPageProps = {
-  bookinghour: BookingHour[]
+type BookingHourPageProps = {
+  bookingId: string
 }
 
-export default function BookingHourPage({ bookinghour }: BookingPageProps) {
+export default function BookingHourPage({ bookingId }: BookingHourPageProps) {
   const [form] = Form.useForm<BookingHourform>()
 
   const [startDate, setStartDate] = useState(null)
   const [endDate, setEndDate] = useState(null)
 
-  async function TimeRelatedForm() {
+  async function onFormSubmit() {
     await form.validateFields()
-    const { bookingId, registration, customerEmail, startTime, endTime } = form.getFieldsValue()
+    const { registration, customerEmail, startTime, endTime } = form.getFieldsValue()
     const values = {
       Booking_id: bookingId,
       Registration: registration,
@@ -39,8 +41,8 @@ export default function BookingHourPage({ bookinghour }: BookingPageProps) {
 
     try {
       console.log('sending data', values)
-      await axios.post(ApiEndpoint.booking, values)
-      router.reload()
+      // await axios.post(ApiEndpoint.booking, values)
+      // router.reload()
     } catch ({ message }) {
       console.error('Error booking values', message)
       notification.error({
@@ -48,7 +50,6 @@ export default function BookingHourPage({ bookinghour }: BookingPageProps) {
         description: message,
       })
     }
-    //}
   }
   return (
     <>
@@ -56,13 +57,13 @@ export default function BookingHourPage({ bookinghour }: BookingPageProps) {
       <div style={{ marginTop: '5%' }} />
 
       <div className="container pt-4 pb-3">
-        <Form form={form} onFinish={TimeRelatedForm}>
+        <Form form={form} onFinish={onFormSubmit}>
           <div className="form-group">
             <div className="row">
               <div className="col-lg-4">
                 <label htmlFor="bookingId">Booking ID:</label>
                 <Form.Item name="bookingId">
-                  <Input id="bookingId" placeholder="Booking ID" className="form-control" required />
+                  <Input id="bookingId" placeholder={bookingId} className="form-control" disabled />
                 </Form.Item>
               </div>
               <div className="col-lg-4">
@@ -114,4 +115,12 @@ export default function BookingHourPage({ bookinghour }: BookingPageProps) {
       </div>
     </>
   )
+}
+
+export async function getServerSideProps(ctx: GetServerSidePropsContext) {
+  return {
+    props: {
+      bookingId: uuid(),
+    },
+  }
 }

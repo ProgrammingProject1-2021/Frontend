@@ -24,7 +24,8 @@
     "react-highlight-words": "^0.17.0",
     "react-hook-form": "^7.0.0",
     "react-router": "^5.2.0",
-    "react-router-dom": "^5.2.0"
+    "react-router-dom": "^5.2.0",
+    "uuidv4": "^6.2.8"
   },
   "devDependencies": {
     "@types/moment-timezone": "^0.5.30",
