@@ -1,0 +1,10 @@
+.profile {
+    padding: 0px 10px;
+}
+
+.profile.page-text h1 {
+    font-weight: 300;
+    margin-top: 20%;
+    padding: 60px;
+    color: #fff;
+}

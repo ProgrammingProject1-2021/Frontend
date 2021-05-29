@@ -9,6 +9,7 @@ import React from 'react'
 
 import '../styles/login.css'
 import '../styles/returnpage.css'
+import '../styles/profile.css'
 
 //Binding events.
 Router.events.on('routeChangeStart', () => NProgress.start())
