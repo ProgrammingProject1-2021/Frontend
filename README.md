@@ -1,5 +1,4 @@
-# Programming Project - Frontend
-# Group 8
+# Programming Project - Frontend - Group 8
 
 ## Members
 * CHOU, Minjin (s3641315)
