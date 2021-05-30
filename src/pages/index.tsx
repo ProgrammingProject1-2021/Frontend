@@ -1,10 +1,11 @@
+import { notification } from 'antd'
 import axios from 'axios'
 import router from 'next/router'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
-
-const API_ENDPOINT =
-  'https://bdo08aact3.execute-api.ap-southeast-2.amazonaws.com/Test'
+import { ApiEndpoint } from '../constant/api'
+import { StorageKey } from '../constant/storage'
+import { LoginResponse } from '../types'
 
 interface IRegistrationInputs {
   email: string
@@ -16,6 +17,7 @@ interface IRegistrationInputs {
 function Register() {
   const [errorMsg, setErrorMsg] = useState('')
   const { register, handleSubmit } = useForm<IRegistrationInputs>()
+  const closeButtonElement = useRef<HTMLInputElement>()
 
   async function onSubmit(data: IRegistrationInputs) {
     const { email, name, password, confirmPassword } = data
@@ -24,19 +26,18 @@ function Register() {
       setErrorMsg('Password mismatch')
       return
     }
+    setErrorMsg('')
 
     try {
-      await axios.post(API_ENDPOINT, {
-        operation: 'create',
-        tableName: 'User',
-        payload: {
-          Item: {
-            Email: email,
-            Name: name,
-            Password: password,
-            admin: false,
-          },
-        },
+      await axios.post(ApiEndpoint.register, {
+        Email: email,
+        Name: name,
+        Password: password,
+        Admin: 'false',
+      })
+      closeButtonElement.current.click()
+      notification.success({
+        message: 'Registration Successful',
       })
     } catch (e) {
       console.error('Error registering', e)
@@ -45,23 +46,14 @@ function Register() {
   }
 
   return (
-    <div
-      className="modal fade"
-      id="exampleModal"
-      role="dialog"
-      aria-labelledby="exampleModalLabel"
-      aria-hidden="true">
+    <div className="modal fade" id="exampleModal" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div className="modal-dialog" role="document">
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title" id="exampleModalLabel">
               Registration Form
             </h5>
-            <button
-              type="button"
-              className="close"
-              data-dismiss="modal"
-              aria-label="Close">
+            <button ref={closeButtonElement} type="button" className="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
@@ -74,22 +66,10 @@ function Register() {
               )}
 
               <label>Email</label>
-              <input
-                {...register('email')}
-                type="email"
-                className="form-control mb-3"
-                placeholder="Email"
-                required
-              />
+              <input {...register('email')} type="email" className="form-control mb-3" placeholder="Email" required />
 
               <label>Name</label>
-              <input
-                {...register('name')}
-                type="text"
-                className="form-control mb-3"
-                placeholder="Name"
-                required
-              />
+              <input {...register('name')} type="text" className="form-control mb-3" placeholder="Name" required />
 
               <label>Password</label>
               <input
@@ -109,10 +89,7 @@ function Register() {
               />
             </div>
             <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                data-dismiss="modal">
+              <button type="button" className="btn btn-secondary" data-dismiss="modal">
                 Close
               </button>
               <button type="submit" className="btn btn-primary">
@@ -125,7 +102,6 @@ function Register() {
     </div>
   )
 }
-
 interface ILoginInputs {
   email: string
   password: string
@@ -140,21 +116,17 @@ export default function Login() {
     const { email, password } = data
 
     try {
-      await axios.post(API_ENDPOINT, {
-        // TODO: change operation
-        operation: 'create',
-        tableName: 'User',
-        payload: {
-          Item: {
-            Email: email,
-            Password: password,
-            admin: false,
-          },
-        },
+      const { data: responseData } = await axios.post<LoginResponse>(ApiEndpoint.login, {
+        Email: email,
+        Password: password,
       })
+      console.log('responseData', responseData)
+
+      localStorage.setItem(StorageKey.EMAIL, email)
+      localStorage.setItem(StorageKey.ADMIN, responseData?.Admin)
 
       router.push({
-        pathname: 'dashboard',
+        pathname: 'main',
       })
     } catch (e) {
       console.error('Error logging in', e)
@@ -185,30 +157,16 @@ export default function Login() {
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="form-group">
                 <label>Email</label>
-                <input
-                  {...register('email')}
-                  type="email"
-                  className="form-control"
-                  placeholder="Email"
-                />
+                <input {...register('email')} type="email" className="form-control" placeholder="Email" />
               </div>
               <div className="form-group">
                 <label>Password</label>
-                <input
-                  {...register('password')}
-                  type="password"
-                  className="form-control"
-                  placeholder="Password"
-                />
+                <input {...register('password')} type="password" className="form-control" placeholder="Password" />
               </div>
               <button type="submit" className="btn btn-black mr-3">
                 Login
               </button>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                data-toggle="modal"
-                data-target="#exampleModal">
+              <button type="button" className="btn btn-secondary" data-toggle="modal" data-target="#exampleModal">
                 Register
               </button>
             </form>
