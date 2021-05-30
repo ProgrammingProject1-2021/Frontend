@@ -23,7 +23,7 @@ export default function Navigation() {
 
             {isAdmin && <Nav.Link href="/vehicle">Add Vehicle</Nav.Link>}
 
-            <Nav.Link href="#profile">Edit Profile</Nav.Link>
+            <Nav.Link href="/profile">Edit Profile</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Navbar>
