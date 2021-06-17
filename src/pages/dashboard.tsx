@@ -4,10 +4,10 @@ import axios from 'axios'
 import React, { useRef, useState } from 'react'
 import Highlighter from 'react-highlight-words'
 import { ApiEndpoint } from '../constant/api'
-import { BookingHistory, DashboardResponse } from '../types/index'
+import { BookingHistory, DashboardResponse } from '../types'
 import Navigation from '../components/navigation'
 
-type dashboardform = {
+type DashboardForm = {
   booking_id: string
   registration : string
   start_time : string
@@ -15,11 +15,11 @@ type dashboardform = {
   cost: string
 }
 
-type dashboardProps = {
+type DashboardProps = {
   dashboard: BookingHistory[]
 }
 
-export default function dashboardPage({ dashboard }: dashboardProps) {
+export default function DashboardPage({ dashboard }: DashboardProps) {
   const columns = [
     {
       title: 'Booking ID',
@@ -53,7 +53,7 @@ export default function dashboardPage({ dashboard }: dashboardProps) {
     searchedColumn: '',
   })
   const searchInputEl = useRef(null)
-  const [form] = Form.useForm<dashboardform>()
+  const [form] = Form.useForm<DashboardForm>()
 
   function getColumnSearchProps(dataIndex) {
     return {
@@ -147,6 +147,7 @@ export default function dashboardPage({ dashboard }: dashboardProps) {
 
 export async function getServerSideProps(context) {
   const res = await axios.get<DashboardResponse>(ApiEndpoint.booking)
+  console.log('res', res.data.Items[0])
 
   const dashboardRes = res.data
 

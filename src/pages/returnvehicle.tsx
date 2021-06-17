@@ -42,9 +42,9 @@ export default function Returnpage() {
       <div className="row mt-5">
         <div className="col-md-12">
           <div style={{ justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-            <a className="card">
+            <div className="card">
               {(() => {
-                switch (Object.keys(vehicles).length) {
+                switch (vehicles.length) {
                   case 0:
                     return (
                       <Link href="/main">
@@ -55,34 +55,34 @@ export default function Returnpage() {
                     )
                   default:
                     return (
-                      <Link href="/vehiclesedit">
-                        <div className="vehicle-return">
-                          <Container>
-                            <Row>
-                              <Col xs lg="3">
-                                <img
-                                  className="image"
-                                  width="215"
-                                  height="155"
-                                  // TODO: use url from database {'url'} so its not hardcoded, not now but after demo due to backend is not updated.
-                                  src="https://images.unsplash.com/photo-1597404294360-feeeda04612e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80"></img>
-                              </Col>
-                              <Col xs lg="9">
-                                {Object.keys(vehicles).map((key, i) => (
-                                  <p key={i}>
-                                    <span>{key}: </span>
-                                    <span>{vehicles[key]}</span>
-                                  </p>
-                                ))}
-                              </Col>
-                            </Row>
-                          </Container>
+                      <div className="vehicle-return">
+                        <div className="container">
+                          {vehicles.map(({ Registration: regis, Model: model }, i) => (
+                            <Link href={`/vehiclesedit?${regis}`}>
+                              <div className="row mt-4">
+                                <div className="col-md-3">
+                                  <img
+                                    className="img-fluid image"
+                                    width="215"
+                                    height="155"
+                                    // TODO: use url from database {'url'} so its not hardcoded, not now but after demo due to backend is not updated.
+                                    src="https://images.unsplash.com/photo-1597404294360-feeeda04612e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80"></img>
+                                </div>
+                                <div className="col-md-9">
+                                  <div className="d-flex flex-column">
+                                    <span>{regis}</span>
+                                    <span>{model}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </Link>
+                          ))}
                         </div>
-                      </Link>
+                      </div>
                     )
                 }
               })()}
-            </a>
+            </div>
           </div>
         </div>
       </div>
