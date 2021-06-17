@@ -52,8 +52,8 @@ export default function Returnpage() {
           <div className="col-md-12">
             <div style={{ justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
               {vehicles.map(({ Registration: regis, Model: model }, i) => (
-                <Link href={`/vehiclesedit?register=${regis}`}>
-                  <div className="card" style={{ cursor: 'pointer' }}>
+                <Link href={`/vehicleedit?registration=${regis}`}>
+                  <div className="card clickable-card pb-3 px-3 mt-3" style={{ cursor: 'pointer' }}>
                     <div className="vehicle-return">
                       <div className="row mt-4">
                         <div className="col-md-3">
