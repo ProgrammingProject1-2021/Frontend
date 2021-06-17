@@ -11,6 +11,7 @@ import { ApiEndpoint } from '../constant/api'
 
 export default function VehicleEdit() {
   const router = useRouter()
+  const [cost, setCost] = useState(-1)
   const [endDate, setEndDate] = useState(null)
   const { registration } = router.query
   const [form] = Form.useForm()
@@ -19,8 +20,11 @@ export default function VehicleEdit() {
     try {
       const payload = { Registration: registration, Actual_end_time: endDate }
       const response = await axios.patch(ApiEndpoint.booking, payload)
-
       console.log('Returning car response', response)
+
+      // const { Cost: _cost } = response.data
+      // setCost(_cost)
+      setCost(100)
     } catch ({ message }) {
       console.error('Error returning car', message)
       notification.error({
@@ -29,6 +33,18 @@ export default function VehicleEdit() {
         placement: 'bottomRight',
       })
     }
+  }
+
+  if (cost > 0) {
+    return (
+      <>
+        <Navigation />
+
+        <div className="container">
+          <PaymentPrompt amount={cost} />
+        </div>
+      </>
+    )
   }
 
   return (
@@ -62,5 +78,24 @@ export default function VehicleEdit() {
         </div>
       </div>
     </>
+  )
+}
+
+type PaymentPromptProps = {
+  amount: number
+}
+function PaymentPrompt({ amount }: PaymentPromptProps) {
+  return (
+    <div className="card col-md-5">
+      <div className="card-body">
+        <h5>Your payment amount is {amount}</h5>
+
+        <div className="mt-4" />
+
+        <button type="submit" className="btn btn-success btn-w200 m-1">
+          Pay
+        </button>
+      </div>
+    </div>
   )
 }
