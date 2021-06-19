@@ -8,6 +8,7 @@ import { Form, notification } from 'antd'
 
 import 'react-datepicker/dist/react-datepicker.css'
 import { ApiEndpoint } from '../constant/api'
+import { StorageKey } from '../constant/storage'
 
 export default function VehicleEdit() {
   const router = useRouter()
@@ -18,13 +19,26 @@ export default function VehicleEdit() {
 
   async function onFormSubmit() {
     try {
-      const payload = { Registration: registration, Actual_end_time: endDate }
-      const response = await axios.patch(ApiEndpoint.booking, payload)
-      console.log('Returning car response', response)
+      const email = localStorage.getItem(StorageKey.EMAIL)
+      if (!email) {
+        notification.error({
+          message: 'Invalid credential',
+          description: 'This user has no email',
+          placement: 'bottomRight',
+        })
+        await router.replace('/login')
+        return
+      }
+
+      const { data: bookingData } = await axios.get(`${ApiEndpoint.booking}?Customer_id=1`)
+      console.log('booking data', bookingData)
+
+      // const payload = { Registration: registration, Actual_end_time: endDate }
+      // const response = await axios.patch(`${ApiEndpoint.booking}/${email}`, payload)
+      // console.log('Returning car response', response)
 
       // const { Cost: _cost } = response.data
       // setCost(_cost)
-      setCost(100)
     } catch ({ message }) {
       console.error('Error returning car', message)
       notification.error({

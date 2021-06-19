@@ -1,25 +1,24 @@
 import { SearchOutlined } from '@ant-design/icons'
 import { Button, Form, Input, notification, Space, Table } from 'antd'
 import axios from 'axios'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Highlighter from 'react-highlight-words'
 import { ApiEndpoint } from '../constant/api'
 import { BookingHistory, DashboardResponse } from '../types'
 import Navigation from '../components/navigation'
+import { StorageKey } from '../constant/storage'
+import { useRouter } from 'next/router'
 
 type DashboardForm = {
   booking_id: string
-  registration : string
-  start_time : string
-  end_time : string
+  registration: string
+  start_time: string
+  end_time: string
   cost: string
 }
 
-type DashboardProps = {
-  dashboard: BookingHistory[]
-}
-
-export default function DashboardPage({ dashboard }: DashboardProps) {
+export default function DashboardPage() {
+  const [dashboard, setDashboard] = useState<BookingHistory[]>([])
   const columns = [
     {
       title: 'Booking ID',
@@ -54,11 +53,38 @@ export default function DashboardPage({ dashboard }: DashboardProps) {
   })
   const searchInputEl = useRef(null)
   const [form] = Form.useForm<DashboardForm>()
+  const router = useRouter()
+
+  useEffect(() => {
+    const fetchApi = async () => {
+      try {
+        const email = localStorage.getItem(StorageKey.EMAIL)
+        if (!email) {
+          notification.error({
+            message: 'Invalid credential',
+            description: 'This user has no email',
+            placement: 'bottomRight',
+          })
+          await router.replace('/login')
+          return
+        }
+        const res = await axios.get<DashboardResponse>(`${ApiEndpoint.booking}?Customer_id=${email}`)
+        console.log('Booking data of current customer', res.data)
+        setDashboard(res.data.Items)
+      } catch ({ message }) {
+        console.error('Error getting data', message)
+        notification.error({
+          message,
+          placement: 'bottomRight',
+        })
+      }
+    }
+    fetchApi()
+  }, [])
 
   function getColumnSearchProps(dataIndex) {
     return {
-      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => 
-      (
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
         <div style={{ padding: 8 }}>
           <Input
             ref={searchInputEl}
@@ -119,8 +145,7 @@ export default function DashboardPage({ dashboard }: DashboardProps) {
     }
   }
 
-  function handleSearch(selectedKeys, confirm, dataIndex) 
-  {
+  function handleSearch(selectedKeys, confirm, dataIndex) {
     confirm()
     setSearchState({
       searchText: selectedKeys[0],
@@ -128,8 +153,7 @@ export default function DashboardPage({ dashboard }: DashboardProps) {
     })
   }
 
-  function handleReset(clearFilters) 
-  {
+  function handleReset(clearFilters) {
     clearFilters()
     setSearchState({ ...searchState, searchText: '' })
   }
@@ -139,21 +163,8 @@ export default function DashboardPage({ dashboard }: DashboardProps) {
       <Navigation />
       <div style={{ marginTop: '5%' }} />
       <div className="container">
-        <Table columns={columns} dataSource={dashboard} rowKey="id" />
+        <Table columns={columns} dataSource={dashboard} rowKey="Booking_id" />
       </div>
     </>
   )
-}
-
-export async function getServerSideProps(context) {
-  const res = await axios.get<DashboardResponse>(ApiEndpoint.booking)
-  console.log('res', res.data.Items[0])
-
-  const dashboardRes = res.data
-
-  return {
-    props: {
-      dashboard: dashboardRes.Items,
-    },
-  }
 }
