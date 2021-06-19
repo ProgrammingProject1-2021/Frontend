@@ -9,6 +9,7 @@ import { Form, notification } from 'antd'
 import 'react-datepicker/dist/react-datepicker.css'
 import { ApiEndpoint } from '../constant/api'
 import { StorageKey } from '../constant/storage'
+import { BookingHour, BookingResponse } from '../types'
 
 export default function VehicleEdit() {
   const router = useRouter()
@@ -30,15 +31,19 @@ export default function VehicleEdit() {
         return
       }
 
-      const { data: bookingData } = await axios.get(`${ApiEndpoint.booking}?Customer_id=1`)
-      console.log('booking data', bookingData)
+      const { data: bookingResData } = await axios.get<BookingResponse>(`${ApiEndpoint.booking}?Customer_id=${email}`)
+      console.log('booking data', bookingResData)
 
-      // const payload = { Registration: registration, Actual_end_time: endDate }
-      // const response = await axios.patch(`${ApiEndpoint.booking}/${email}`, payload)
-      // console.log('Returning car response', response)
+      const bookingData = bookingResData.Items.find((booking) => booking.Registration === registration)
 
-      // const { Cost: _cost } = response.data
-      // setCost(_cost)
+      const payload = { ...bookingData, Actual_end_time: endDate }
+      console.log('Returning car with payload', payload)
+
+      const response = await axios.patch(`${ApiEndpoint.booking}/${bookingData.Booking_id}`, payload)
+      console.log('Returning car response', response)
+
+      const { Cost: _cost } = response.data
+      setCost(_cost)
     } catch ({ message }) {
       console.error('Error returning car', message)
       notification.error({
