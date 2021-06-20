@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useRouter } from 'next/router'
+import router, { useRouter } from 'next/router'
 import DatePicker from 'react-datepicker'
 import axios from 'axios'
 
@@ -10,6 +10,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 import { ApiEndpoint } from '../constant/api'
 import { StorageKey } from '../constant/storage'
 import { BookingHour, BookingResponse } from '../types'
+import dayjs from 'dayjs'
 
 export default function VehicleEdit() {
   const router = useRouter()
@@ -36,7 +37,12 @@ export default function VehicleEdit() {
 
       const bookingData = bookingResData.Items.find((booking) => booking.Registration === registration)
 
-      const payload = { ...bookingData, Actual_end_time: endDate }
+      const payload = {
+        ...bookingData,
+        Current_customer: '',
+        Customer_id: '',
+        Actual_end_time: dayjs(endDate).toISOString(),
+      }
       console.log('Returning car with payload', payload)
 
       const response = await axios.patch(`${ApiEndpoint.booking}/${bookingData.Booking_id}`, payload)
@@ -104,6 +110,35 @@ type PaymentPromptProps = {
   amount: number
 }
 function PaymentPrompt({ amount }: PaymentPromptProps) {
+  const { registration, model, location_name } = router.query
+
+  const onClickPay = async () => {
+    const vehiclePayload = {
+      Model: model,
+      Registration: registration,
+      Current_customer: '',
+      Location_name: location_name,
+    }
+
+    try {
+      console.log('Updating vehicle data', vehiclePayload)
+      await axios.patch(`${ApiEndpoint.vehicle}/${registration}`, vehiclePayload)
+
+      await router.replace('/main')
+      notification.success({
+        message: 'Payment Successful',
+        placement: 'bottomRight',
+      })
+    } catch ({ message }) {
+      console.error('Error sending vehicle info', message)
+      notification.error({
+        message: 'Payment Failed',
+        description: message,
+        placement: 'bottomRight',
+      })
+    }
+  }
+
   return (
     <div className="card col-md-5">
       <div className="card-body">
@@ -111,7 +146,7 @@ function PaymentPrompt({ amount }: PaymentPromptProps) {
 
         <div className="mt-4" />
 
-        <button type="submit" className="btn btn-success btn-w200 m-1">
+        <button onClick={onClickPay} type="submit" className="btn btn-success btn-w200 m-1">
           Pay
         </button>
       </div>
