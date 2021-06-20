@@ -1,16 +1,24 @@
 import React, { useEffect, useState } from 'react'
 import { StorageKey } from '../constant/storage'
+import { useRouter } from 'next/router'
 
 export default function Navigation() {
   const [isAdmin, setIsAdmin] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
     const storedAdmin: boolean = localStorage.getItem(StorageKey.ADMIN) === 'true'
     setIsAdmin(storedAdmin)
   }, [])
 
+  const onLogout = async () => {
+    localStorage.setItem(StorageKey.EMAIL, '')
+    localStorage.setItem(StorageKey.ADMIN, '')
+    await router.push('/')
+  }
+
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-3">
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-3 justify-content-between">
       <a className="navbar-brand" href="#">
         CHS
       </a>
@@ -53,6 +61,13 @@ export default function Navigation() {
             <a className="nav-link" href="/profile">
               Profile
             </a>
+          </li>
+        </ul>
+        <ul className="navbar-nav ml-auto">
+          <li className="nav-item">
+            <div className="nav-link" style={{ cursor: 'pointer' }} onClick={onLogout}>
+              Logout
+            </div>
           </li>
         </ul>
       </div>
