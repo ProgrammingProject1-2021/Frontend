@@ -37,6 +37,13 @@ export default function BookingHourPage({ bookingId, model, registration, locati
   async function onFormSubmit() {
     await form.validateFields()
     const { startTime, endTime } = form.getFieldsValue()
+    if (!startTime || !endTime) {
+      notification.error({
+        message: 'Please choose start time and end time',
+        placement: 'bottomRight',
+      })
+      return
+    }
 
     const vehiclePayload = {
       Model: model,
@@ -47,6 +54,7 @@ export default function BookingHourPage({ bookingId, model, registration, locati
 
     const bookingPayload = {
       Booking_id: bookingId,
+      Customer_id: email,
       Registration: registration,
       Current_customer: email,
       Start_time: dayjs(startTime).toISOString(),
@@ -107,7 +115,7 @@ export default function BookingHourPage({ bookingId, model, registration, locati
                 </Form.Item>
               </div>
               <div className="col-lg-4">
-                <Form.Item name="startTime" label="Start Time">
+                <Form.Item name="startTime" label="Start Time" required>
                   <DatePicker
                     className="form-control"
                     selected={startDate}
@@ -120,7 +128,7 @@ export default function BookingHourPage({ bookingId, model, registration, locati
                 </Form.Item>
               </div>
               <div className="col-lg-4">
-                <Form.Item name="endTime" label="End Time">
+                <Form.Item name="endTime" label="End Time" required>
                   <DatePicker
                     className="form-control"
                     selected={endDate}
