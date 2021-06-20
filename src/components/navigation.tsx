@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { Nav, Navbar } from 'react-bootstrap'
 import { StorageKey } from '../constant/storage'
 
 export default function Navigation() {
@@ -11,22 +10,52 @@ export default function Navigation() {
   }, [])
 
   return (
-    <div className="navbar">
-      <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark" fixed="top">
-        <Navbar.Brand href="/main">CHS</Navbar.Brand>
-        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-        <Navbar.Collapse id="responsive-navbar-nav">
-          <Nav className="mr-auto">
-            <Nav.Link href="/booking">Map/Book Vehicle</Nav.Link>
-            <Nav.Link href="/returnvehicle">Return Vehicle</Nav.Link>
-            <Nav.Link href="/dashboard">View History</Nav.Link>
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-3">
+      <a className="navbar-brand" href="#">
+        CHS
+      </a>
+      <button
+        className="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation">
+        <span className="navbar-toggler-icon"></span>
+      </button>
 
-            {isAdmin && <Nav.Link href="/vehicle">Add Vehicle</Nav.Link>}
-
-            <Nav.Link href="/profile">Edit Profile</Nav.Link>
-          </Nav>
-        </Navbar.Collapse>
-      </Navbar>
-    </div>
+      <div className="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul className="navbar-nav mr-auto">
+          <li className="nav-item">
+            <a className="nav-link" href="/booking">
+              Map/Book Vehicle
+            </a>
+          </li>
+          <li className="nav-item">
+            <a className="nav-link" href="/returnvehicle">
+              Return Vehicle
+            </a>
+          </li>
+          <li className="nav-item">
+            <a className="nav-link" href="/dashboard">
+              Dashboard
+            </a>
+          </li>
+          {isAdmin && (
+            <li className="nav-item">
+              <a className="nav-link" href="/vehicle">
+                Add Vehicle
+              </a>
+            </li>
+          )}
+          <li className="nav-item">
+            <a className="nav-link" href="/profile">
+              Profile
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
   )
 }

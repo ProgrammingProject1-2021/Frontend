@@ -47,6 +47,7 @@ export default function BookingHourPage({ bookingId, model, registration, locati
 
     const bookingPayload = {
       Booking_id: bookingId,
+      Customer_id: email,
       Registration: registration,
       Current_customer: email,
       Start_time: dayjs(startTime).toISOString(),

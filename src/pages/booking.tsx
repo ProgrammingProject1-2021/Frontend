@@ -142,12 +142,14 @@ export default function BookingPage({ locations, vehicles }: BookingPageProps) {
   // End functions used for table searching
 
   return (
-    <div className="container pt-4 pb-3">
+    <>
       <Navigation />
 
-      <MapView locations={locations} handleMarker={handleMarker} />
-      <Table columns={columns} dataSource={vehicles} rowKey={(row) => row.id} />
-    </div>
+      <div className="container pt-4">
+        <MapView locations={locations} handleMarker={handleMarker} />
+        <Table columns={columns} dataSource={vehicles} rowKey={(row) => row.id} />
+      </div>
+    </>
   )
 }
 
