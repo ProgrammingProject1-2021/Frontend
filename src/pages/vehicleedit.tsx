@@ -9,7 +9,7 @@ import { Form, notification } from 'antd'
 import 'react-datepicker/dist/react-datepicker.css'
 import { ApiEndpoint } from '../constant/api'
 import { StorageKey } from '../constant/storage'
-import { BookingHour, BookingResponse } from '../types'
+import { BookingResponse } from '../types'
 import dayjs from 'dayjs'
 
 export default function VehicleEdit() {
@@ -39,8 +39,6 @@ export default function VehicleEdit() {
 
       const payload = {
         ...bookingData,
-        Current_customer: '',
-        Customer_id: '',
         Actual_end_time: dayjs(endDate).toISOString(),
       }
       console.log('Returning car with payload', payload)
