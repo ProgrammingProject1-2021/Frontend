@@ -25,6 +25,12 @@
 * Users can view the map
 * Users can book vehicles through the map
 
+## Code documentation - Release 1.1.0 - 21/06/2021
+
+* Users can edit their profile
+* Users can pay for their booking
+* Users can log out
+
 To run the application locally : 
 1) cd into FrontEnd
 2) run "npm install"
