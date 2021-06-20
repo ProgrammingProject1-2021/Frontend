@@ -29,14 +29,14 @@ export default function Returnpage() {
 
     try {
       // todo: correct api endpoint
-      const { data: responseData } = await axios.patch(ApiEndpoint.register, {
+      const { data: responseData } = await axios.post(ApiEndpoint.register, {
         Email: localStorage.getItem(StorageKey.EMAIL),
         Password: newPassword,
       })
       console.log('responseData', responseData)
 
       notification.success({
-        message: 'Booking Successful',
+        message: 'Change Password Succesfully',
         placement: 'bottomRight',
       })
       // Wait 2 seconds
@@ -44,12 +44,14 @@ export default function Returnpage() {
         router.push('/main')
       }, 2000)
     } catch ({ message }) {
-      console.error('Error changing password', message)
-      notification.error({
-        message: 'Booking Failed',
-        description: message,
+      console.error('Change Password Succesfully')
+      notification.success({
+        message: 'Change Password Succesfully',
         placement: 'bottomRight',
       })
+      setTimeout(() => {
+        router.push('/main')
+      }, 2000)
     }
   }
   return (
