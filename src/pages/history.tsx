@@ -1,5 +1,5 @@
 import { SearchOutlined } from '@ant-design/icons'
-import { Button, Form, Input, notification, Space, Table } from 'antd'
+import { Button, Input, notification, Space, Table } from 'antd'
 import axios from 'axios'
 import React, { useEffect, useRef, useState } from 'react'
 import Highlighter from 'react-highlight-words'
@@ -8,16 +8,9 @@ import { BookingHistory, DashboardResponse } from '../types'
 import Navigation from '../components/navigation'
 import { StorageKey } from '../constant/storage'
 import { useRouter } from 'next/router'
+import dayjs from 'dayjs'
 
-type DashboardForm = {
-  booking_id: string
-  registration: string
-  start_time: string
-  end_time: string
-  cost: string
-}
-
-export default function DashboardPage() {
+export default function ViewHistory() {
   const [dashboard, setDashboard] = useState<BookingHistory[]>([])
   const columns = [
     {
@@ -52,7 +45,6 @@ export default function DashboardPage() {
     searchedColumn: '',
   })
   const searchInputEl = useRef(null)
-  const [form] = Form.useForm<DashboardForm>()
   const router = useRouter()
 
   useEffect(() => {
@@ -70,7 +62,16 @@ export default function DashboardPage() {
         }
         const res = await axios.get<DashboardResponse>(`${ApiEndpoint.booking}?Customer_id=${email}`)
         console.log('Booking data of current customer', res.data)
-        setDashboard(res.data.Items)
+
+        const tableData = res.data.Items.map((item) => {
+          return {
+            ...item,
+            Start_time: dayjs(item.Start_time).format('YYYY-MM-DD HH:mm'),
+            End_time: dayjs(item.End_time).format('YYYY-MM-DD HH:mm'),
+          }
+        })
+
+        setDashboard(tableData)
       } catch ({ message }) {
         console.error('Error getting data', message)
         notification.error({

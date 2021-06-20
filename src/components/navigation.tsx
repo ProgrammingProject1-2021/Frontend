@@ -38,8 +38,8 @@ export default function Navigation() {
             </a>
           </li>
           <li className="nav-item">
-            <a className="nav-link" href="/dashboard">
-              Dashboard
+            <a className="nav-link" href="/history">
+              View History
             </a>
           </li>
           {isAdmin && (
